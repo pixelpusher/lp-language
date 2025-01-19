@@ -1,0 +1,20 @@
+{
+  "name": "lp-language",
+  "private": false,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.2",
+    "liveprinter-utils": "github:pixelpusher/lp-utils",
+    "nearley": "^2.20.1",
+    "vite": "^6.0.5"
+  },
+  "dependencies": {
+    "liveprinter-core": "github:pixelpusher/liveprinter-core"
+  }
+}

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LivePrinter Language Lib</title>
+  </head>
+  <body>
+    <div id="app">
+      <textarea name="code" id="code" cols="80" rows="10">
+        # start | dist 50 | speed 40 | draw
+        
+      </textarea>
+      <p name="output" id="output">TRANSPILED...</p>
+      <p name="output2" id="output2">TRANSPILED(obj renamed)...</p>
+      <button id="transpile">transpile</button>
+    </div>
+    <script type="module" src="/src/main_lp.js"></script>
+  </body>
+</html>
