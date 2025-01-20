@@ -1,4 +1,4 @@
-import { transpile } from "../lib/transpile";
+import { transpile } from "./transpile";
 import { LivePrinter } from "liveprinter-core";
 import { Logger } from "liveprinter-utils";
 
