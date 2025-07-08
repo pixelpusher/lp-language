@@ -59,8 +59,7 @@ document.getElementById("transpile").addEventListener("click", async () => {
     }
 
     Logger.info("running inner");
-    await innerFunc(lib);
-    return 1;
+    return innerFunc(lib);
   };
 
   try {
