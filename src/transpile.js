@@ -4,13 +4,15 @@ import { grammar } from './lpgrammar';
 import {default as nearley}  from 'nearley'; // grammar parser
 
 // in code, find blocks inside ## ## and feed to grammar
-const grammarBlockRegex = /(?:\n|\t|\s)*\#{2}\s*((?:.|\n|\t|\s)*)\#{2}/g;
+export const grammarBlockRegex = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g;
 
 // one line grammar with # at start
-const grammarOneLineRegex = /(?:\n|\t|\s)*\#\s*((?:[^\n])*)/g;
+export const grammarOneLineRegex = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g;
 
 // lp object call from transpilation
-const lpRegex = /([\n\s])*lp(\.)/g;
+export const lpRegex = /([\n\s])*lp(\.)/g;
+
+export const globalRegex = /(?:^|\s|;)(global)(?:\s+)/g;
 
 /**
  * 
@@ -37,18 +39,16 @@ export function transpile(code, objName) {
     // filter out comments
     const commentRegex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm; // https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline/15123777#15123777
 
-    code = code.replace(commentRegex, (match, p1) => {
-        return p1;
-    });
+    code = code.replace(commentRegex, ''); // remove comments
 
-    // replace global keywords with Window
-    code = code.replace(/^[ ]*global[ ]+/gm, "window.");
+    // replace global keywords
+    code = code.replaceAll(globalRegex, "globalThis.");
 
     Logger.debug("code before pre-processing-------------------------------");
     Logger.debug(code);
     Logger.debug("========================= -------------------------------");
 
-    code = code.replace(grammarBlockRegex, (match, p1) => {
+    code = code.replaceAll(grammarBlockRegex, (match, p1) => {
         Logger.debug("Match: " + p1);
 
         let result = "";
@@ -56,18 +56,20 @@ export function transpile(code, objName) {
 
         lines.map((line) => {
             // get ride of remaining line breaks and leading spaces
-            line = line.replace(/([\r\n]+)/gm, "").replace(/(^[\s]+)/, "");
+            line = line.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, "");
             if (line.length === 0) {
                 return;
             } else {
                 // errors bubble up to calling function
-                blockparser.feed(line + '\n'); // EOL terminates command
+                blockparser.feed(line + "|\n"); // EOL terminates command
+                Logger.debug(`block parser state ${blockparser.results[0]}`);
             }
+            Logger.debug(`BLOCK Line: !!!${line}!!!`);
         }); // end compiling line by line
 
         result += blockparser.results[0];
 
-        return ' ' + result + "\n"; // need leading space
+        return "\n" + result + "\n"; // need leading return for block
     });
 
     Logger.info("code AFTER block-grammar processing -------------------------------");
@@ -80,7 +82,7 @@ export function transpile(code, objName) {
     //
     let grammarFound = false; // if this line contains the lp grammar
     // note: p3 is the optional trailing # that can be ignored
-    code = code.replace(grammarOneLineRegex, (match, p1, p2) => {
+    code = code.replaceAll(grammarOneLineRegex, (match, p1) => {
         const lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
 
         Logger.debug("!!!"+match+"!!!");
@@ -88,8 +90,7 @@ export function transpile(code, objName) {
         grammarFound = true; // found!
         let result = "";
         let fail = false; // if not successful
-        // .replace(/(^[\s]+)/, "")
-        let line = p1.replace(/([\r\n]+)/gm, "").replace(/([\s]+)$/, "");
+        let line = p1;
 
         //Logger.debug("LINE::" + line + "::LINE");
         if (line) {
@@ -99,7 +100,7 @@ export function transpile(code, objName) {
                 result = lineparser.results[0];
                 //Logger.debug(result);
         }
-        return ' ' + result;
+        return '\n' + result;
     });
 
     // change lp object name if passed in
