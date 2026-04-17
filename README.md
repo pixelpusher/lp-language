@@ -84,6 +84,58 @@ await lp.draw(40);
 await lp.turn(80);
 ```
 
+### `parseStrudel(pattern, totalBeats = 4)`
+
+Parses a Strudel/TidalCycles mini-notation string into a 2D array of note names and beats for use with LivePrinter.
+
+**Parameters:**
+- `pattern` (String): The code string containing Strudel/Tidal mininotation to parse
+- `totalBeats` (Number, optional): Total number of beats in the pattern for calculating fractional beat values. Defaults to 4.
+
+**Returns:**
+- (Array): A 2D array where each element is `[noteName, durationString]` representing the note and its duration in beats (e.g., `[['C4', '1/4b'], ['D4', '1/4b'], ['E4', '1/2b']]`)
+
+**Description:**
+Converts Strudel mini-notation patterns into a format suitable for LivePrinter. Supports:
+- **Expansion**: `note!3` expands to three copies of the note
+- **Grouping**: Square brackets `[...]` group nested patterns
+- **Silence**: `~` represents a rest (converted to `-`)
+- **Multiplication**: `note*4` repeats a note 4 times within its duration
+- **Duration modifiers**: `@` and `/` notation for weighted time allocation
+- **Fractional beats**: Automatically converts beat durations to fraction strings (e.g., `1/4b`, `3/8b`)
+2. **One-liner syntax**: Commands prefixed with `#`
+
+The function handles:
+- Comment removal (both `/* */` and `//` style)
+- Grammar parsing using nearley parser
+- Conversion of async functions to proper `await` statements
+- Function chaining with `|` operator
+- Parameterized function calls with named arguments
+
+**Example:**
+
+```javascript
+import { transpile } from './src/transpile.js';
+
+const liveprinterCode = `
+  const speed = 20;
+  
+  #draw 40
+  #turn 80
+`;
+
+const jsCode = transpile(liveprinterCode);
+console.log(jsCode);
+```
+
+**Output:**
+```javascript
+const speed = 20;
+
+await lp.draw(40);
+await lp.turn(80);
+```
+
 ### Regex Patterns (Exports)
 
 #### `grammarBlockRegex`
