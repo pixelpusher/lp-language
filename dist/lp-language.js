@@ -6,8 +6,8 @@ const E = {
   Lexer: void 0,
   ParserRules: [
     { name: "Main$ebnf$1", symbols: ["EOL"] },
-    { name: "Main$ebnf$1", symbols: ["Main$ebnf$1", "EOL"], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "Main$ebnf$1", symbols: ["Main$ebnf$1", "EOL"], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
     { name: "Main", symbols: ["Chain", "Main$ebnf$1", "Space", "Main"], postprocess: (e) => [e[0]].concat(e[3]).join(";") },
     { name: "Main$ebnf$2", symbols: ["EOL"], postprocess: g },
@@ -30,39 +30,39 @@ const E = {
     { name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1", symbols: [], postprocess: function(e) {
       return null;
     } },
-    { name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1", symbols: ["FunctionName", "Space", { literal: "(" }, "Space", "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1", "Space", { literal: ")" }], postprocess: ([e, r, a, f, c, h, p]) => e + a + (Array.isArray(c) ? c.join(",") : c) + p },
+    { name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1", symbols: ["FunctionName", "Space", { literal: "(" }, "Space", "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1", "Space", { literal: ")" }], postprocess: ([e, s, a, h, c, u, p]) => e + a + (Array.isArray(c) ? c.join(",") : c) + p },
     {
       name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
       symbols: ["ObjArgs"],
       postprocess: function([e]) {
-        let r = "{";
+        let s = "{";
         if (typeof e != "string")
           for (let a = 0; a < e.length; a++) {
-            let f = e[a];
-            r += f, a - (e.length - 1) && (r += ",");
+            let h = e[a];
+            s += h, a - (e.length - 1) && (s += ",");
           }
-        else r += e;
-        return r += "}", r;
+        else s += e;
+        return s += "}", s;
       }
     },
     {
       name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
       symbols: ["AnyArgs"],
       postprocess: function([e]) {
-        let r = "";
+        let s = "";
         if (e.length)
           for (let a = 0; a < e.length; a++) {
-            let f = e[a];
-            r += f, a - (e.length - 1) && (r += ",");
+            let h = e[a];
+            s += h, a - (e.length - 1) && (s += ",");
           }
-        return r;
+        return s;
       }
     },
     { name: "FunctionStatement$ebnf$1$subexpression$1", symbols: ["Spaces", "FunctionStatement$ebnf$1$subexpression$1$subexpression$1"], postprocess: (e) => {
-      let r = "";
+      let s = "";
       for (let a of e)
-        a && (r += a);
-      return r;
+        a && (s += a);
+      return s;
     } },
     { name: "FunctionStatement$ebnf$1", symbols: ["FunctionStatement$ebnf$1$subexpression$1"], postprocess: g },
     { name: "FunctionStatement$ebnf$1", symbols: [], postprocess: function(e) {
@@ -71,65 +71,65 @@ const E = {
     { name: "FunctionStatement", symbols: ["FunctionStatement$subexpression$1", "FunctionStatement$ebnf$1"], postprocess: (e) => e.join("") + ")" },
     { name: "FunctionName", symbols: ["PlainVariable"] },
     { name: "FunctionName", symbols: ["ObjectVariable"], postprocess: g },
-    { name: "AnyArgs", symbols: ["AnyArg", "Spaces", "AnyArgs"], postprocess: ([e, r, a]) => [e].concat(a) },
+    { name: "AnyArgs", symbols: ["AnyArg", "Spaces", "AnyArgs"], postprocess: ([e, s, a]) => [e].concat(a) },
     { name: "AnyArgs", symbols: ["AnyArg"], postprocess: g },
-    { name: "ObjArgs", symbols: ["ObjArg", "Spaces", "ObjArgs"], postprocess: ([e, r, a]) => [e].concat(a) },
+    { name: "ObjArgs", symbols: ["ObjArg", "Spaces", "ObjArgs"], postprocess: ([e, s, a]) => [e].concat(a) },
     { name: "ObjArgs", symbols: ["ObjArg"], postprocess: g },
     { name: "ObjArg$ebnf$1", symbols: ["Letter"] },
-    { name: "ObjArg$ebnf$1", symbols: ["ObjArg$ebnf$1", "Letter"], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "ObjArg$ebnf$1", symbols: ["ObjArg$ebnf$1", "Letter"], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
-    { name: "ObjArg", symbols: ["ObjArg$ebnf$1", "Space", "ArgSeparator", "Space", "AnyArg"], postprocess: ([e, r, a, f, c]) => e.join("") + a + c },
+    { name: "ObjArg", symbols: ["ObjArg$ebnf$1", "Space", "ArgSeparator", "Space", "AnyArg"], postprocess: ([e, s, a, h, c]) => e.join("") + a + c },
     { name: "AnyArg", symbols: ["AnyVar"] },
     { name: "AnyArg", symbols: ["ParenthesisStatement"] },
     { name: "AnyArg", symbols: ["MathFuncs"] },
-    { name: "ParenthesisStatement", symbols: [{ literal: "(" }, "Space", "BasicStatement", "Space", { literal: ")" }], postprocess: ([e, r, a, f, c]) => e + a + c },
+    { name: "ParenthesisStatement", symbols: [{ literal: "(" }, "Space", "BasicStatement", "Space", { literal: ")" }], postprocess: ([e, s, a, h, c]) => e + a + c },
     { name: "BasicStatement", symbols: ["AnyVar"] },
     { name: "BasicStatement", symbols: ["MathFuncs"] },
-    { name: "MathFuncs", symbols: ["MathFunc", "Space", "MathFuncs"], postprocess: ([e, r, a]) => [e].concat(a).join("") },
+    { name: "MathFuncs", symbols: ["MathFunc", "Space", "MathFuncs"], postprocess: ([e, s, a]) => [e].concat(a).join("") },
     { name: "MathFuncs", symbols: ["MathFunc"], postprocess: g },
     { name: "MathFunc$ebnf$1", symbols: ["AnyVar"], postprocess: g },
     { name: "MathFunc$ebnf$1", symbols: [], postprocess: function(e) {
       return null;
     } },
-    { name: "MathFunc", symbols: ["MathFunc$ebnf$1", "Space", "MathOps", "Space", "AnyVar"], postprocess: ([e, r, a, f, c]) => (e || "") + a + c },
+    { name: "MathFunc", symbols: ["MathFunc$ebnf$1", "Space", "MathOps", "Space", "AnyVar"], postprocess: ([e, s, a, h, c]) => (e || "") + a + c },
     { name: "AnyVar", symbols: ["Number"] },
     { name: "AnyVar", symbols: ["PlainVariable"] },
     { name: "AnyVar", symbols: ["ObjectVariable"] },
     { name: "AnyVar", symbols: ["StringLiteral"] },
     { name: "AnyVar", symbols: ["ParenthesisStatement"] },
-    { name: "ObjectVariable", symbols: ["PlainVariable", "DOT", "PlainVariable"], postprocess: ([e, r, a]) => e + r + a },
+    { name: "ObjectVariable", symbols: ["PlainVariable", "DOT", "PlainVariable"], postprocess: ([e, s, a]) => e + s + a },
     { name: "PlainVariable$ebnf$1", symbols: [] },
-    { name: "PlainVariable$ebnf$1", symbols: ["PlainVariable$ebnf$1", "AnyValidCharacter"], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "PlainVariable$ebnf$1", symbols: ["PlainVariable$ebnf$1", "AnyValidCharacter"], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
-    { name: "PlainVariable", symbols: ["CharOrLetter", "PlainVariable$ebnf$1"], postprocess: ([e, r]) => e + r.join("") },
+    { name: "PlainVariable", symbols: ["CharOrLetter", "PlainVariable$ebnf$1"], postprocess: ([e, s]) => e + s.join("") },
     { name: "StringLiteral$ebnf$1", symbols: [] },
-    { name: "StringLiteral$ebnf$1", symbols: ["StringLiteral$ebnf$1", /[^|]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "StringLiteral$ebnf$1", symbols: ["StringLiteral$ebnf$1", /[^|]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
-    { name: "StringLiteral", symbols: ["QUOTE", "StringLiteral$ebnf$1", "QUOTE"], postprocess: ([e, r, a]) => e + r.join("") + a },
+    { name: "StringLiteral", symbols: ["QUOTE", "StringLiteral$ebnf$1", "QUOTE"], postprocess: ([e, s, a]) => e + s.join("") + a },
     { name: "Number", symbols: ["Integer"], postprocess: g },
     { name: "Number", symbols: ["Float"], postprocess: g },
     { name: "Float$ebnf$1", symbols: [/[0-9]/] },
-    { name: "Float$ebnf$1", symbols: ["Float$ebnf$1", /[0-9]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "Float$ebnf$1", symbols: ["Float$ebnf$1", /[0-9]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
-    { name: "Float", symbols: ["Integer", { literal: "." }, "Float$ebnf$1"], postprocess: ([e, r, a]) => e + r + a.join("") },
+    { name: "Float", symbols: ["Integer", { literal: "." }, "Float$ebnf$1"], postprocess: ([e, s, a]) => e + s + a.join("") },
     { name: "Integer$ebnf$1", symbols: [{ literal: "-" }], postprocess: g },
     { name: "Integer$ebnf$1", symbols: [], postprocess: function(e) {
       return null;
     } },
-    { name: "Integer", symbols: ["Integer$ebnf$1", "Zero"], postprocess: ([e, r]) => (e ? "-" : "") + r },
+    { name: "Integer", symbols: ["Integer$ebnf$1", "Zero"], postprocess: ([e, s]) => (e ? "-" : "") + s },
     { name: "Integer$ebnf$2", symbols: [{ literal: "-" }], postprocess: g },
     { name: "Integer$ebnf$2", symbols: [], postprocess: function(e) {
       return null;
     } },
     { name: "Integer$ebnf$3", symbols: [] },
-    { name: "Integer$ebnf$3", symbols: ["Integer$ebnf$3", "Digit"], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "Integer$ebnf$3", symbols: ["Integer$ebnf$3", "Digit"], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
-    { name: "Integer", symbols: ["Integer$ebnf$2", "NonzeroNumber", "Integer$ebnf$3"], postprocess: ([e, r, a]) => (e ? "-" : "") + r + a.join("") },
+    { name: "Integer", symbols: ["Integer$ebnf$2", "NonzeroNumber", "Integer$ebnf$3"], postprocess: ([e, s, a]) => (e ? "-" : "") + s + a.join("") },
     { name: "MathOps", symbols: [/[*+-/]/] },
     { name: "ArgSeparator", symbols: [{ literal: ":" }] },
     { name: "Zero", symbols: [{ literal: "0" }] },
@@ -153,15 +153,15 @@ const E = {
     { name: "QUOTE", symbols: [{ literal: '"' }] },
     { name: "QUOTE", symbols: [{ literal: "'" }] },
     { name: "_$ebnf$1", symbols: [] },
-    { name: "_$ebnf$1", symbols: ["_$ebnf$1", /[\s]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "_$ebnf$1", symbols: ["_$ebnf$1", /[\s]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
     { name: "_", symbols: ["_$ebnf$1"], postprocess: function(e) {
       return null;
     } },
     { name: "__$ebnf$1", symbols: [/[\s]/] },
-    { name: "__$ebnf$1", symbols: ["__$ebnf$1", /[\s]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "__$ebnf$1", symbols: ["__$ebnf$1", /[\s]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
     { name: "__", symbols: ["__$ebnf$1"], postprocess: function(e) {
       return null;
@@ -170,15 +170,15 @@ const E = {
       return null;
     } },
     { name: "Space$ebnf$1", symbols: [] },
-    { name: "Space$ebnf$1", symbols: ["Space$ebnf$1", /[ ]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "Space$ebnf$1", symbols: ["Space$ebnf$1", /[ ]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
     { name: "Space", symbols: ["Space$ebnf$1"], postprocess: function(e) {
       return null;
     } },
     { name: "Spaces$ebnf$1", symbols: [/[ ]/] },
-    { name: "Spaces$ebnf$1", symbols: ["Spaces$ebnf$1", /[ ]/], postprocess: function(r) {
-      return r[0].concat([r[1]]);
+    { name: "Spaces$ebnf$1", symbols: ["Spaces$ebnf$1", /[ ]/], postprocess: function(s) {
+      return s[0].concat([s[1]]);
     } },
     { name: "Spaces", symbols: ["Spaces$ebnf$1"], postprocess: function(e) {
       return null;
@@ -187,24 +187,24 @@ const E = {
   ParserStart: "Main"
 };
 typeof module < "u" && typeof module.exports < "u" ? module.exports = E : window.grammar = E;
-function L(e) {
+function I(e) {
   return e && e.__esModule && Object.prototype.hasOwnProperty.call(e, "default") ? e.default : e;
 }
-var F = { exports: {} }, M = F.exports, P;
-function I() {
+var F = { exports: {} }, L = F.exports, P;
+function M() {
   return P || (P = 1, function(e) {
-    (function(r, a) {
-      e.exports ? e.exports = a() : r.nearley = a();
-    })(M, function() {
-      function r(t, n, s) {
-        return this.id = ++r.highestId, this.name = t, this.symbols = n, this.postprocess = s, this;
+    (function(s, a) {
+      e.exports ? e.exports = a() : s.nearley = a();
+    })(L, function() {
+      function s(t, n, r) {
+        return this.id = ++s.highestId, this.name = t, this.symbols = n, this.postprocess = r, this;
       }
-      r.highestId = 0, r.prototype.toString = function(t) {
-        var n = typeof t > "u" ? this.symbols.map(y).join(" ") : this.symbols.slice(0, t).map(y).join(" ") + " ● " + this.symbols.slice(t).map(y).join(" ");
+      s.highestId = 0, s.prototype.toString = function(t) {
+        var n = typeof t > "u" ? this.symbols.map($).join(" ") : this.symbols.slice(0, t).map($).join(" ") + " ● " + this.symbols.slice(t).map($).join(" ");
         return this.name + " → " + n;
       };
-      function a(t, n, s, o) {
-        this.rule = t, this.dot = n, this.reference = s, this.data = [], this.wantedBy = o, this.isComplete = this.dot === t.symbols.length;
+      function a(t, n, r, o) {
+        this.rule = t, this.dot = n, this.reference = r, this.data = [], this.wantedBy = o, this.isComplete = this.dot === t.symbols.length;
       }
       a.prototype.toString = function() {
         return "{" + this.rule.toString(this.dot) + "}, from: " + (this.reference || 0);
@@ -220,193 +220,193 @@ function I() {
       }, a.prototype.finish = function() {
         this.rule.postprocess && (this.data = this.rule.postprocess(this.data, this.reference, p.fail));
       };
-      function f(t, n) {
+      function h(t, n) {
         this.grammar = t, this.index = n, this.states = [], this.wants = {}, this.scannable = [], this.completed = {};
       }
-      f.prototype.process = function(t) {
-        for (var n = this.states, s = this.wants, o = this.completed, l = 0; l < n.length; l++) {
+      h.prototype.process = function(t) {
+        for (var n = this.states, r = this.wants, o = this.completed, l = 0; l < n.length; l++) {
           var i = n[l];
           if (i.isComplete) {
             if (i.finish(), i.data !== p.fail) {
-              for (var b = i.wantedBy, u = b.length; u--; ) {
-                var $ = b[u];
-                this.complete($, i);
+              for (var f = i.wantedBy, m = f.length; m--; ) {
+                var y = f[m];
+                this.complete(y, i);
               }
               if (i.reference === this.index) {
-                var m = i.rule.name;
-                (this.completed[m] = this.completed[m] || []).push(i);
+                var b = i.rule.name;
+                (this.completed[b] = this.completed[b] || []).push(i);
               }
             }
           } else {
-            var m = i.rule.symbols[i.dot];
-            if (typeof m != "string") {
+            var b = i.rule.symbols[i.dot];
+            if (typeof b != "string") {
               this.scannable.push(i);
               continue;
             }
-            if (s[m]) {
-              if (s[m].push(i), o.hasOwnProperty(m))
-                for (var S = o[m], u = 0; u < S.length; u++) {
-                  var x = S[u];
+            if (r[b]) {
+              if (r[b].push(i), o.hasOwnProperty(b))
+                for (var v = o[b], m = 0; m < v.length; m++) {
+                  var x = v[m];
                   this.complete(i, x);
                 }
             } else
-              s[m] = [i], this.predict(m);
+              r[b] = [i], this.predict(b);
           }
         }
-      }, f.prototype.predict = function(t) {
-        for (var n = this.grammar.byName[t] || [], s = 0; s < n.length; s++) {
-          var o = n[s], l = this.wants[t], i = new a(o, 0, this.index, l);
+      }, h.prototype.predict = function(t) {
+        for (var n = this.grammar.byName[t] || [], r = 0; r < n.length; r++) {
+          var o = n[r], l = this.wants[t], i = new a(o, 0, this.index, l);
           this.states.push(i);
         }
-      }, f.prototype.complete = function(t, n) {
-        var s = t.nextState(n);
-        this.states.push(s);
+      }, h.prototype.complete = function(t, n) {
+        var r = t.nextState(n);
+        this.states.push(r);
       };
       function c(t, n) {
         this.rules = t, this.start = n || this.rules[0].name;
-        var s = this.byName = {};
+        var r = this.byName = {};
         this.rules.forEach(function(o) {
-          s.hasOwnProperty(o.name) || (s[o.name] = []), s[o.name].push(o);
+          r.hasOwnProperty(o.name) || (r[o.name] = []), r[o.name].push(o);
         });
       }
       c.fromCompiled = function(o, n) {
-        var s = o.Lexer;
+        var r = o.Lexer;
         o.ParserStart && (n = o.ParserStart, o = o.ParserRules);
         var o = o.map(function(i) {
-          return new r(i.name, i.symbols, i.postprocess);
+          return new s(i.name, i.symbols, i.postprocess);
         }), l = new c(o, n);
-        return l.lexer = s, l;
+        return l.lexer = r, l;
       };
-      function h() {
+      function u() {
         this.reset("");
       }
-      h.prototype.reset = function(t, n) {
+      u.prototype.reset = function(t, n) {
         this.buffer = t, this.index = 0, this.line = n ? n.line : 1, this.lastLineBreak = n ? -n.col : 0;
-      }, h.prototype.next = function() {
+      }, u.prototype.next = function() {
         if (this.index < this.buffer.length) {
           var t = this.buffer[this.index++];
           return t === `
 ` && (this.line += 1, this.lastLineBreak = this.index), { value: t };
         }
-      }, h.prototype.save = function() {
+      }, u.prototype.save = function() {
         return {
           line: this.line,
           col: this.index - this.lastLineBreak
         };
-      }, h.prototype.formatError = function(t, n) {
-        var s = this.buffer;
-        if (typeof s == "string") {
-          var o = s.split(`
+      }, u.prototype.formatError = function(t, n) {
+        var r = this.buffer;
+        if (typeof r == "string") {
+          var o = r.split(`
 `).slice(
             Math.max(0, this.line - 5),
             this.line
-          ), l = s.indexOf(`
+          ), l = r.indexOf(`
 `, this.index);
-          l === -1 && (l = s.length);
-          var i = this.index - this.lastLineBreak, b = String(this.line).length;
+          l === -1 && (l = r.length);
+          var i = this.index - this.lastLineBreak, f = String(this.line).length;
           return n += " at line " + this.line + " col " + i + `:
 
-`, n += o.map(function($, m) {
-            return u(this.line - o.length + m + 1, b) + " " + $;
+`, n += o.map(function(y, b) {
+            return m(this.line - o.length + b + 1, f) + " " + y;
           }, this).join(`
 `), n += `
-` + u("", b + i) + `^
+` + m("", f + i) + `^
 `, n;
         } else
           return n + " at index " + (this.index - 1);
-        function u($, m) {
-          var S = String($);
-          return Array(m - S.length + 1).join(" ") + S;
+        function m(y, b) {
+          var v = String(y);
+          return Array(b - v.length + 1).join(" ") + v;
         }
       };
-      function p(t, n, s) {
+      function p(t, n, r) {
         if (t instanceof c)
-          var o = t, s = n;
+          var o = t, r = n;
         else
           var o = c.fromCompiled(t, n);
         this.grammar = o, this.options = {
           keepHistory: !1,
-          lexer: o.lexer || new h()
+          lexer: o.lexer || new u()
         };
-        for (var l in s || {})
-          this.options[l] = s[l];
+        for (var l in r || {})
+          this.options[l] = r[l];
         this.lexer = this.options.lexer, this.lexerState = void 0;
-        var i = new f(o, 0);
+        var i = new h(o, 0);
         this.table = [i], i.wants[o.start] = [], i.predict(o.start), i.process(), this.current = 0;
       }
       p.fail = {}, p.prototype.feed = function(t) {
         var n = this.lexer;
         n.reset(t, this.lexerState);
-        for (var s; ; ) {
+        for (var r; ; ) {
           try {
-            if (s = n.next(), !s)
+            if (r = n.next(), !r)
               break;
           } catch (O) {
-            var b = new f(this.grammar, this.current + 1);
-            this.table.push(b);
+            var f = new h(this.grammar, this.current + 1);
+            this.table.push(f);
             var o = new Error(this.reportLexerError(O));
             throw o.offset = this.current, o.token = O.token, o;
           }
           var l = this.table[this.current];
           this.options.keepHistory || delete this.table[this.current - 1];
-          var i = this.current + 1, b = new f(this.grammar, i);
-          this.table.push(b);
-          for (var u = s.text !== void 0 ? s.text : s.value, $ = n.constructor === h ? s.value : s, m = l.scannable, S = m.length; S--; ) {
-            var x = m[S], w = x.rule.symbols[x.dot];
-            if (w.test ? w.test($) : w.type ? w.type === s.type : w.literal === u) {
-              var j = x.nextState({ data: $, token: s, isToken: !0, reference: i - 1 });
-              b.states.push(j);
+          var i = this.current + 1, f = new h(this.grammar, i);
+          this.table.push(f);
+          for (var m = r.text !== void 0 ? r.text : r.value, y = n.constructor === u ? r.value : r, b = l.scannable, v = b.length; v--; ) {
+            var x = b[v], w = x.rule.symbols[x.dot];
+            if (w.test ? w.test(y) : w.type ? w.type === r.type : w.literal === m) {
+              var j = x.nextState({ data: y, token: r, isToken: !0, reference: i - 1 });
+              f.states.push(j);
             }
           }
-          if (b.process(), b.states.length === 0) {
-            var o = new Error(this.reportError(s));
-            throw o.offset = this.current, o.token = s, o;
+          if (f.process(), f.states.length === 0) {
+            var o = new Error(this.reportError(r));
+            throw o.offset = this.current, o.token = r, o;
           }
           this.options.keepHistory && (l.lexerState = n.save()), this.current++;
         }
         return l && (this.lexerState = n.save()), this.results = this.finish(), this;
       }, p.prototype.reportLexerError = function(t) {
-        var n, s, o = t.token;
-        return o ? (n = "input " + JSON.stringify(o.text[0]) + " (lexer error)", s = this.lexer.formatError(o, "Syntax error")) : (n = "input (lexer error)", s = t.message), this.reportErrorCommon(s, n);
+        var n, r, o = t.token;
+        return o ? (n = "input " + JSON.stringify(o.text[0]) + " (lexer error)", r = this.lexer.formatError(o, "Syntax error")) : (n = "input (lexer error)", r = t.message), this.reportErrorCommon(r, n);
       }, p.prototype.reportError = function(t) {
-        var n = (t.type ? t.type + " token: " : "") + JSON.stringify(t.value !== void 0 ? t.value : t), s = this.lexer.formatError(t, "Syntax error");
-        return this.reportErrorCommon(s, n);
+        var n = (t.type ? t.type + " token: " : "") + JSON.stringify(t.value !== void 0 ? t.value : t), r = this.lexer.formatError(t, "Syntax error");
+        return this.reportErrorCommon(r, n);
       }, p.prototype.reportErrorCommon = function(t, n) {
-        var s = [];
-        s.push(t);
-        var o = this.table.length - 2, l = this.table[o], i = l.states.filter(function(u) {
-          var $ = u.rule.symbols[u.dot];
-          return $ && typeof $ != "string";
+        var r = [];
+        r.push(t);
+        var o = this.table.length - 2, l = this.table[o], i = l.states.filter(function(m) {
+          var y = m.rule.symbols[m.dot];
+          return y && typeof y != "string";
         });
         if (i.length === 0)
-          s.push("Unexpected " + n + `. I did not expect any more input. Here is the state of my parse table:
-`), this.displayStateStack(l.states, s);
+          r.push("Unexpected " + n + `. I did not expect any more input. Here is the state of my parse table:
+`), this.displayStateStack(l.states, r);
         else {
-          s.push("Unexpected " + n + `. Instead, I was expecting to see one of the following:
+          r.push("Unexpected " + n + `. Instead, I was expecting to see one of the following:
 `);
-          var b = i.map(function(u) {
-            return this.buildFirstStateStack(u, []) || [u];
+          var f = i.map(function(m) {
+            return this.buildFirstStateStack(m, []) || [m];
           }, this);
-          b.forEach(function(u) {
-            var $ = u[0], m = $.rule.symbols[$.dot], S = this.getSymbolDisplay(m);
-            s.push("A " + S + " based on:"), this.displayStateStack(u, s);
+          f.forEach(function(m) {
+            var y = m[0], b = y.rule.symbols[y.dot], v = this.getSymbolDisplay(b);
+            r.push("A " + v + " based on:"), this.displayStateStack(m, r);
           }, this);
         }
-        return s.push(""), s.join(`
+        return r.push(""), r.join(`
 `);
       }, p.prototype.displayStateStack = function(t, n) {
-        for (var s, o = 0, l = 0; l < t.length; l++) {
-          var i = t[l], b = i.rule.toString(i.dot);
-          b === s ? o++ : (o > 0 && n.push("    ^ " + o + " more lines identical to this"), o = 0, n.push("    " + b)), s = b;
+        for (var r, o = 0, l = 0; l < t.length; l++) {
+          var i = t[l], f = i.rule.toString(i.dot);
+          f === r ? o++ : (o > 0 && n.push("    ^ " + o + " more lines identical to this"), o = 0, n.push("    " + f)), r = f;
         }
       }, p.prototype.getSymbolDisplay = function(t) {
-        return v(t);
+        return S(t);
       }, p.prototype.buildFirstStateStack = function(t, n) {
         if (n.indexOf(t) !== -1)
           return null;
         if (t.wantedBy.length === 0)
           return [t];
-        var s = t.wantedBy[0], o = [t].concat(n), l = this.buildFirstStateStack(s, o);
+        var r = t.wantedBy[0], o = [t].concat(n), l = this.buildFirstStateStack(r, o);
         return l === null ? null : [t].concat(l);
       }, p.prototype.save = function() {
         var t = this.table[this.current];
@@ -419,14 +419,14 @@ function I() {
           throw new Error("set option `keepHistory` to enable rewinding");
         this.restore(this.table[t]);
       }, p.prototype.finish = function() {
-        var t = [], n = this.grammar.start, s = this.table[this.table.length - 1];
-        return s.states.forEach(function(o) {
+        var t = [], n = this.grammar.start, r = this.table[this.table.length - 1];
+        return r.states.forEach(function(o) {
           o.rule.name === n && o.dot === o.rule.symbols.length && o.reference === 0 && o.data !== p.fail && t.push(o);
         }), t.map(function(o) {
           return o.data;
         });
       };
-      function v(t) {
+      function S(t) {
         var n = typeof t;
         if (n === "string")
           return t;
@@ -442,7 +442,7 @@ function I() {
           throw new Error("Unknown symbol type: " + t);
         }
       }
-      function y(t) {
+      function $(t) {
         var n = typeof t;
         if (n === "string")
           return t;
@@ -461,44 +461,44 @@ function I() {
       return {
         Parser: p,
         Grammar: c,
-        Rule: r
+        Rule: s
       };
     });
   }(F)), F.exports;
 }
-var k = I();
-const A = /* @__PURE__ */ L(k), V = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, R = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g, _ = /([\n\s])*lp(\.)/g, N = /(?:^|\s|;)(global)(?:\s+)/g;
-function D(e, r) {
-  const a = new A.Parser(A.Grammar.fromCompiled(E)), f = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm;
-  return e = e.replace(f, ""), e = e.replaceAll(N, "globalThis."), d.debug("code before pre-processing-------------------------------"), d.debug(e), d.debug("========================= -------------------------------"), e = e.replaceAll(V, (c, h) => {
-    d.debug("Match: " + h);
+var k = M();
+const A = /* @__PURE__ */ I(k), N = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, V = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g, R = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
+function D(e, s) {
+  const a = new A.Parser(A.Grammar.fromCompiled(E)), h = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm;
+  return e = e.replace(h, ""), e = e.replaceAll(_, "globalThis."), d.debug("code before pre-processing-------------------------------"), d.debug(e), d.debug("========================= -------------------------------"), e = e.replaceAll(N, (c, u) => {
+    d.debug("Match: " + u);
     let p = "";
-    return h.split(/[\r\n]/).map((y) => {
-      y = y.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, ""), y.length !== 0 && (a.feed(y + `|
-`), d.debug(`block parser state ${a.results[0]}`), d.debug(`BLOCK Line: !!!${y}!!!`));
+    return u.split(/[\r\n]/).map(($) => {
+      $ = $.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, ""), $.length !== 0 && (a.feed($ + `|
+`), d.debug(`block parser state ${a.results[0]}`), d.debug(`BLOCK Line: !!!${$}!!!`));
     }), p += a.results[0], `
 ` + p + `
 `;
-  }), d.info("code AFTER block-grammar processing -------------------------------"), d.info(e), d.info("========================= -------------------------------"), e = e.replaceAll(R, (c, h) => {
+  }), d.info("code AFTER block-grammar processing -------------------------------"), d.info(e), d.info("========================= -------------------------------"), e = e.replaceAll(V, (c, u) => {
     const p = new A.Parser(A.Grammar.fromCompiled(E));
-    d.debug("!!!" + c + "!!!"), d.debug("!!!" + h + "!!!");
-    let v = "", y = h;
-    return y && (p.feed(y + `
-`), v = p.results[0]), `
-` + v;
-  }), r && (e = e.replace(_, `$1${r}$2`)), d.debug("code AFTER one-line-grammar processing -------------------------------"), d.debug(e), d.debug("========================= -------------------------------"), e;
+    d.debug("!!!" + c + "!!!"), d.debug("!!!" + u + "!!!");
+    let S = "", $ = u;
+    return $ && (p.feed($ + `
+`), S = p.results[0]), `
+` + S;
+  }), s && (e = e.replace(R, `$1${s}$2`)), d.debug("code AFTER one-line-grammar processing -------------------------------"), d.debug(e), d.debug("========================= -------------------------------"), e;
 }
 const C = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)[^a-zA-Z0-9\_]/;
 function T(e) {
-  e.defineMode("lp", function(r, a) {
-    const f = {
-      token: function(c, h) {
+  e.defineMode("lp", function(s, a) {
+    const h = {
+      token: function(c, u) {
         let p = "";
         if (!c.eol()) {
-          let v = c.match(C, !1);
-          if (v) {
-            let y = v[1].length;
-            for (; y--; ) c.eat(() => !0);
+          let S = c.match(C, !1);
+          if (S) {
+            let $ = S[1].length;
+            for (; $--; ) c.eat(() => !0);
             return "lp";
           }
         }
@@ -508,10 +508,57 @@ function T(e) {
         return null;
       }
     };
-    return e.overlayMode(e.getMode(r, a.backdrop || "javascript"), f);
+    return e.overlayMode(e.getMode(s, a.backdrop || "javascript"), h);
   });
+}
+function U(e, s = 4) {
+  const h = e.replace(/([^\s\[\]]+)!(\d+)/g, (t, n, r) => Array(parseInt(r, 10)).fill(n).join(" ")).match(/\[|\]|[^\s\[\]]+/g);
+  if (!h) return [];
+  const c = [], u = [c];
+  for (const t of h)
+    if (t === "[") {
+      const n = [];
+      u[u.length - 1].push(n), u.push(n);
+    } else t === "]" ? u.length > 1 && u.pop() : u[u.length - 1].push(t);
+  function p(t) {
+    if (Number.isInteger(t)) return t + "b";
+    for (let n = 2; n <= 64; n *= 2) {
+      let r = Math.round(t * n);
+      if (Math.abs(t - r / n) < 1e-3) return r === 1 ? `1/${n}b` : `${r}/${n}b`;
+    }
+    return t.toFixed(3).replace(/\.?0+$/, "") + "b";
+  }
+  const S = [];
+  function $(t, n) {
+    if (Array.isArray(t)) {
+      let r = 0;
+      const o = t.map((l) => {
+        let i = 1;
+        return typeof l == "string" && (l.includes("@") ? i = parseFloat(l.split("@")[1]) || 1 : l.includes("/") && (i = parseFloat(l.split("/")[1]) || 1)), r += i, { child: l, weight: i };
+      });
+      for (const { child: l, weight: i } of o) {
+        const f = n * (i / r);
+        $(l, f);
+      }
+    } else {
+      let r = t, o = n;
+      if (r.includes("@") && (r = r.split("@")[0]), r.includes("/") && (r = r.split("/")[0]), r.includes("*")) {
+        const [i, f] = r.split("*"), m = i === "~" ? "-" : i, y = parseInt(f, 10);
+        if (!isNaN(y) && y > 0) {
+          const b = o / y, v = p(b);
+          for (let x = 0; x < y; x++)
+            S.push([m, v]);
+          return;
+        }
+      }
+      const l = r === "~" ? "-" : r;
+      S.push([l, p(o)]);
+    }
+  }
+  return $(c, s), S;
 }
 export {
   T as addCMMode,
+  U as parseStrudel,
   D as transpile
 };

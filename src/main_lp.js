@@ -1,4 +1,5 @@
 import { transpile, grammarBlockRegex, grammarOneLineRegex, globalRegex } from "./transpile";
+import { test as testStrudelParser } from "./strudel";
 import { LivePrinter } from "liveprinter-core";
 import { Logger } from "liveprinter-utils";
 
@@ -16,6 +17,9 @@ const eventHandler = {
     resultsTextArea.value += `${JSON.stringify(event)}\n`;
   },
 };
+
+// test strudent parser
+testStrudelParser();
 
 // run basic grammar tests
 
