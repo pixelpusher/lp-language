@@ -103,37 +103,30 @@ Converts Strudel mini-notation patterns into a format suitable for LivePrinter. 
 - **Multiplication**: `note*4` repeats a note 4 times within its duration
 - **Duration modifiers**: `@` and `/` notation for weighted time allocation
 - **Fractional beats**: Automatically converts beat durations to fraction strings (e.g., `1/4b`, `3/8b`)
-2. **One-liner syntax**: Commands prefixed with `#`
-
-The function handles:
-- Comment removal (both `/* */` and `//` style)
-- Grammar parsing using nearley parser
-- Conversion of async functions to proper `await` statements
-- Function chaining with `|` operator
-- Parameterized function calls with named arguments
 
 **Example:**
 
 ```javascript
-import { transpile } from './src/transpile.js';
+import { parseStrudel } from './src/strudel.js';
+// Complex Nesting and Operations",
 
-const liveprinterCode = `
-  const speed = 20;
-  
-  #draw 40
-  #turn 80
-`;
+const pattern = "[[bd sn] hh*2] ~";
 
-const jsCode = transpile(liveprinterCode);
-console.log(jsCode);
+// 2 beats total. Group 1 gets 1 beat, Rest gets 1 beat.
+const result = parseStrudel(pattern, 2);
+console.log(result);
 ```
 
 **Output:**
 ```javascript
-const speed = 20;
-
-await lp.draw(40);
-await lp.turn(80);
+[
+    // Group 1 (1 beat total) -> splits into two half-beats
+    ['bd', '1/4b'], ['sn', '1/4b'], // [bd sn] splits the 1/2 beat into two 1/4 beats
+    ['hh', '1/4b'], ['hh', '1/4b'], // hh*2 splits the 1/2 beat into two 1/4 beats
+    
+    // Group 2
+    ['-', '1b'] // Rest gets 1 full beat
+]
 ```
 
 ### Regex Patterns (Exports)
