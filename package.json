@@ -18,12 +18,13 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^28.0.2",
-    "liveprinter-utils": "github:pixelpusher/lp-utils",
+    "@rollup/plugin-commonjs": "^29.0.2",
     "nearley": "^2.20.1",
-    "vite": "^6.0.5"
+    "vite": "^8.0.8",
+    "liveprinter-core": "github:pixelpusher/liveprinter-core"
+    
   },
   "dependencies": {
-    "liveprinter-core": "github:pixelpusher/liveprinter-core"
+    "liveprinter-utils": "github:pixelpusher/lp-utils"
   }
 }
