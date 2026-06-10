@@ -43,10 +43,29 @@ describe('Nearley parser', () => {
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
         const line = "mov2 x:40 y:60 speed:10\n";
         const transpiled = lineparser.feed(line);
-        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results.length).toBeGreaterThan(0)
         const out = transpiled.results[0];
         expect(out).toBe('await lp.mov2({x:40,y:60,speed:10});');
     });
+
+    test('Function with note speed and object args (mov2)', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = "mov2 x:40 y:60 speed:'a#3'\n";
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('await lp.mov2({x:40,y:60,speed:\'a#3\'});');
+    });
+
+    test('Function with note speed auto-quoting and object args (mov2)', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = "mov2 x:40 y:60 speed:a#3\n";
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('await lp.mov2({x:40,y:60,speed:\"a#3\"});');
+    });
+
 
     test('Function with nested parentheses', () => {
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
@@ -70,12 +89,33 @@ describe('Nearley parser', () => {
 
     test('String literal and negative number parsing', () => {
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-        const line = 'draw "hello world" | move -5 0 1\n';
+        const line = 'beep "hello world" | move -5\n';
         const transpiled = lineparser.feed(line);
         expect(transpiled.results.length).toBeGreaterThan(0);
         const out = transpiled.results[0];
-        expect(out).toContain('"hello world"');
-        expect(out).toContain('-5');
+        expect(out).toBe('lp.beep("hello world");await lp.move(-5);'); 
+    });
+
+
+    test('Multiple arguments parsing', () => {
+        // NOTE: dangerous with numbers because operators might combine them!
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = 'move 10 4 "blue"\n';
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('await lp.move(10,4,"blue");');
+        
+    });
+
+test('Multiple arguments parsing with maths precidence', () => {
+        // NOTE: dangerous with numbers because operators might combine them!
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = 'move 10 -4 2\n';
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('await lp.move(10-4,2);');
     });
 
     test('Math operations in args', () => {

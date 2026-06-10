@@ -217,12 +217,16 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 					postprocess: ([e, t, n, r, i]) => e.join("") + n + i
 				},
 				{
-					name: "AnyArg",
-					symbols: ["AnyVar"]
+					name: "BasicStatement",
+					symbols: ["AnyArg"]
 				},
 				{
 					name: "AnyArg",
 					symbols: ["MathFuncs"]
+				},
+				{
+					name: "AnyArg",
+					symbols: ["AnyVar"]
 				},
 				{
 					name: "ArrayStatement",
@@ -245,14 +249,6 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 						{ literal: ")" }
 					],
 					postprocess: ([e, t, n, r, i]) => e + n + i
-				},
-				{
-					name: "BasicStatement",
-					symbols: ["AnyVar"]
-				},
-				{
-					name: "BasicStatement",
-					symbols: ["MathFuncs"]
 				},
 				{
 					name: "MathFuncs",
@@ -365,6 +361,10 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				},
 				{
 					name: "AnyVar",
+					symbols: ["MusicNote"]
+				},
+				{
+					name: "AnyVar",
 					symbols: ["Number"]
 				},
 				{
@@ -407,6 +407,27 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 					name: "PlainVariable",
 					symbols: ["CharOrLetter", "PlainVariable$ebnf$1"],
 					postprocess: ([e, t]) => e + t.join("")
+				},
+				{
+					name: "MusicNote$ebnf$1",
+					symbols: ["SharpOrFlat"],
+					postprocess: e
+				},
+				{
+					name: "MusicNote$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "MusicNote",
+					symbols: [
+						"CharOrLetter",
+						"MusicNote$ebnf$1",
+						"Integer"
+					],
+					postprocess: ([e, t, n]) => `"${e + (t || "") + n}"`
 				},
 				{
 					name: "StringLiteral$ebnf$1",
@@ -558,6 +579,14 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				{
 					name: "CharOrLetter",
 					symbols: ["Letter"]
+				},
+				{
+					name: "SharpOrFlat",
+					symbols: [{ literal: "#" }]
+				},
+				{
+					name: "SharpOrFlat",
+					symbols: [{ literal: "b" }]
 				},
 				{
 					name: "UsableCharacter",

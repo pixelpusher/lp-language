@@ -48,14 +48,15 @@ ObjArgs -> ObjArg Spaces ObjArgs {% ([arg, ws, args]) => [arg].concat(args) %}
 # object arguments inside the curly braces, like { x:32 }
 ObjArg    -> Letter:+ Space ArgSeparator Space AnyArg {% ([argname, ws1, separator, ws2, argVal]) => argname.join('') + separator + argVal %}
 
+# they are the same... just to be clear
+BasicStatement -> AnyArg
+
 # valid arguments for functions
-AnyArg -> AnyVar | MathFuncs
+AnyArg -> MathFuncs | AnyVar 
 
 ArrayStatement -> "[" Space BasicStatement Space "]" {% ([lparen, sp, statement, sp2, rparen]) => lparen+statement+rparen %}
 
 ParenthesisStatement -> "(" Space BasicStatement Space ")" {% ([lparen, sp, statement, sp2, rparen]) => lparen+statement+rparen %}
-
-BasicStatement -> AnyVar | MathFuncs
 
 MathFuncs -> MathFunc Space MathFuncs {% ([arg, ws, args]) => [arg].concat(args).join('') %} 
     | MathFunc {% id %}
@@ -88,7 +89,7 @@ ComplexVar -> ComplexVar Space "(" Space AnyArgs:? Space ")"
 
 # ------------------------------------------------------------
 
-AnyVar -> Number # int or float
+AnyVar -> MusicNote | Number # int or float
     | ComplexVar         # <--- Replaces ArrayAccess, InlineFunction, Plain/ObjectVar
     | StringLiteral
     | ParenthesisStatement
@@ -99,6 +100,8 @@ AnyVar -> Number # int or float
 ObjectVariable -> PlainVariable DOT PlainVariable {% ([pv1, dot, pv2])=> pv1 + dot + pv2 %} 
 
 PlainVariable -> CharOrLetter AnyValidCharacter:* {% ([first, second])=> first + second.join('') %}
+
+MusicNote -> CharOrLetter SharpOrFlat:? Integer {% ([c,sf,oct]) => `"${c + (sf || "") + oct}"`%}
 
 StringLiteral -> "\"" [^"]:* "\"" {% ([lq, str, rq]) => lq + str.join('') + rq %}
                | "'" [^']:* "'" {% ([lq, str, rq]) => lq + str.join('') + rq %}
@@ -120,6 +123,8 @@ Zero -> "0"
 AnyValidCharacter -> Letter | UsableCharacter | Digit
 
 CharOrLetter -> UsableCharacter | Letter
+
+SharpOrFlat -> "#" | "b"
 
 UsableCharacter -> [\$\£\&\^\*\_\#]
 
