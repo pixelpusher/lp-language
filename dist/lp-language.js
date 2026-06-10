@@ -991,7 +991,7 @@ function b(e) {
 //#endregion
 //#region src/strudel.js
 function x(e, t = 4) {
-	let n = e.replace(/([^\s\[\]]+)!(\d+)/g, (e, t, n) => Array(parseInt(n, 10)).fill(t).join(" ")).match(/\[|\]|[^\s\[\]]+/g);
+	let n = e.replace(/(\[[^\]]*\]|[^\s\[\]]+)!(\d+)/g, (e, t, n) => Array(parseInt(n, 10)).fill(t).join(" ")).match(/\[|\]|[^\s\[\]]+/g);
 	if (!n) return [];
 	let r = [], i = [r];
 	for (let e of n) if (e === "[") {

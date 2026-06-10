@@ -50,4 +50,12 @@ describe('Strudel parser', () => {
       ['-', '1b']
     ]);
   });
+
+  test('Top-level Bracketed Replication', () => {
+    const out = parseStrudel('[a b c]!2', 4);
+    expect(out).toEqual([
+      ['a', '0.667b'], ['b', '0.667b'], ['c', '0.667b'],
+      ['a', '0.667b'], ['b', '0.667b'], ['c', '0.667b']
+    ]);
+  });
 });

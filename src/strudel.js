@@ -6,8 +6,9 @@
  * @returns {Array} 2D array in liveprinter notation
  */
 export function parseStrudel(pattern, totalBeats = 4) {
-    const expandedPattern = pattern.replace(/([^\s\[\]]+)!(\d+)/g, (match, note, count) => {
-        return Array(parseInt(count, 10)).fill(note).join(' ');
+
+    const expandedPattern = pattern.replace(/(\[[^\]]*\]|[^\s\[\]]+)!(\d+)/g, (match, token, count) => {
+        return Array(parseInt(count, 10)).fill(token).join(' ');
     });
     
     const tokens = expandedPattern.match(/\[|\]|[^\s\[\]]+/g);
