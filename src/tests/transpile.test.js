@@ -66,6 +66,14 @@ describe('Nearley parser', () => {
         expect(out).toBe('await lp.mov2({x:40,y:60,speed:\"a#3\"});');
     });
 
+    test('Function with note speed auto-quoting', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = "speed a#3\n";
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('lp.speed(\"a#3\");');
+    });
 
     test('Function with nested parentheses', () => {
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
