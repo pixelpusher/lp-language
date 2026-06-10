@@ -1,5 +1,5 @@
 import { Logger } from 'liveprinter-utils';
-import { grammar } from './lpgrammar';
+import { default as grammar } from "./lpgrammar.js";
 
 import {default as nearley}  from 'nearley'; // grammar parser
 

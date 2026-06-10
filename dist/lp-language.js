@@ -9,610 +9,684 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 }, l = (e, r, i) => (i = e == null ? {} : t(a(e)), c(r || !e || !e.__esModule ? n(i, "default", {
 	value: e,
 	enumerable: !0
-}) : i, e));
-//#endregion
-//#region src/lpgrammar.js
-function u(e) {
-	return e[0];
-}
-var d = {
-	Lexer: void 0,
-	ParserRules: [
-		{
-			name: "Main$ebnf$1",
-			symbols: ["EOL"]
-		},
-		{
-			name: "Main$ebnf$1",
-			symbols: ["Main$ebnf$1", "EOL"],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "Main",
-			symbols: [
-				"Chain",
-				"Main$ebnf$1",
-				"Space",
-				"Main"
-			],
-			postprocess: (e) => [e[0]].concat(e[3]).join(";")
-		},
-		{
-			name: "Main$ebnf$2",
-			symbols: ["EOL"],
-			postprocess: u
-		},
-		{
-			name: "Main$ebnf$2",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Main",
-			symbols: [
-				"Chain",
-				"Space",
-				"Main$ebnf$2"
-			],
-			postprocess: (e) => e[0] + ";"
-		},
-		{
-			name: "Chain",
-			symbols: [
-				"FunctionStatement",
-				"Space",
-				"PIPE",
-				"Space",
-				"Chain"
-			],
-			postprocess: (e) => [e[0]].concat(e[4]).join(";")
-		},
-		{
-			name: "Chain$ebnf$1",
-			symbols: ["PIPE"],
-			postprocess: u
-		},
-		{
-			name: "Chain$ebnf$1",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Chain",
-			symbols: [
-				"FunctionStatement",
-				"Space",
-				"Chain$ebnf$1"
-			],
-			postprocess: (e) => e[0]
-		},
-		{
-			name: "FunctionStatement$subexpression$1",
-			symbols: ["FunctionName"],
-			postprocess: ([e]) => (e = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
-			symbols: ["AnyArgs"],
-			postprocess: u
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
-			symbols: [
-				"FunctionName",
-				"Space",
-				{ literal: "(" },
-				"Space",
-				"FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
-				"Space",
-				{ literal: ")" }
-			],
-			postprocess: ([e, t, n, r, i, a, o]) => e + n + (Array.isArray(i) ? i.join(",") : i) + o
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
-			symbols: ["ObjArgs"],
-			postprocess: function([e]) {
-				let t = "{";
-				if (typeof e != "string") for (let n = 0; n < e.length; n++) {
-					let r = e[n];
-					t += r, n - (e.length - 1) && (t += ",");
-				}
-				else t += e;
-				return t += "}", t;
-			}
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
-			symbols: ["AnyArgs"],
-			postprocess: function([e]) {
-				let t = "";
-				if (e.length) for (let n = 0; n < e.length; n++) {
-					let r = e[n];
-					t += r, n - (e.length - 1) && (t += ",");
-				}
-				return t;
-			}
-		},
-		{
-			name: "FunctionStatement$ebnf$1$subexpression$1",
-			symbols: ["Spaces", "FunctionStatement$ebnf$1$subexpression$1$subexpression$1"],
-			postprocess: (e) => {
-				let t = "";
-				for (let n of e) n && (t += n);
-				return t;
-			}
-		},
-		{
-			name: "FunctionStatement$ebnf$1",
-			symbols: ["FunctionStatement$ebnf$1$subexpression$1"],
-			postprocess: u
-		},
-		{
-			name: "FunctionStatement$ebnf$1",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "FunctionStatement",
-			symbols: ["FunctionStatement$subexpression$1", "FunctionStatement$ebnf$1"],
-			postprocess: (e) => e.join("") + ")"
-		},
-		{
-			name: "FunctionName",
-			symbols: ["PlainVariable"]
-		},
-		{
-			name: "FunctionName",
-			symbols: ["ObjectVariable"],
-			postprocess: u
-		},
-		{
-			name: "AnyArgs",
-			symbols: [
-				"AnyArg",
-				"Spaces",
-				"AnyArgs"
-			],
-			postprocess: ([e, t, n]) => [e].concat(n)
-		},
-		{
-			name: "AnyArgs",
-			symbols: ["AnyArg"],
-			postprocess: u
-		},
-		{
-			name: "ObjArgs",
-			symbols: [
-				"ObjArg",
-				"Spaces",
-				"ObjArgs"
-			],
-			postprocess: ([e, t, n]) => [e].concat(n)
-		},
-		{
-			name: "ObjArgs",
-			symbols: ["ObjArg"],
-			postprocess: u
-		},
-		{
-			name: "ObjArg$ebnf$1",
-			symbols: ["Letter"]
-		},
-		{
-			name: "ObjArg$ebnf$1",
-			symbols: ["ObjArg$ebnf$1", "Letter"],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "ObjArg",
-			symbols: [
-				"ObjArg$ebnf$1",
-				"Space",
-				"ArgSeparator",
-				"Space",
-				"AnyArg"
-			],
-			postprocess: ([e, t, n, r, i]) => e.join("") + n + i
-		},
-		{
-			name: "AnyArg",
-			symbols: ["AnyVar"]
-		},
-		{
-			name: "AnyArg",
-			symbols: ["ParenthesisStatement"]
-		},
-		{
-			name: "AnyArg",
-			symbols: ["MathFuncs"]
-		},
-		{
-			name: "ParenthesisStatement",
-			symbols: [
-				{ literal: "(" },
-				"Space",
-				"BasicStatement",
-				"Space",
-				{ literal: ")" }
-			],
-			postprocess: ([e, t, n, r, i]) => e + n + i
-		},
-		{
-			name: "BasicStatement",
-			symbols: ["AnyVar"]
-		},
-		{
-			name: "BasicStatement",
-			symbols: ["MathFuncs"]
-		},
-		{
-			name: "MathFuncs",
-			symbols: [
-				"MathFunc",
-				"Space",
-				"MathFuncs"
-			],
-			postprocess: ([e, t, n]) => [e].concat(n).join("")
-		},
-		{
-			name: "MathFuncs",
-			symbols: ["MathFunc"],
-			postprocess: u
-		},
-		{
-			name: "MathFunc$ebnf$1",
-			symbols: ["AnyVar"],
-			postprocess: u
-		},
-		{
-			name: "MathFunc$ebnf$1",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "MathFunc",
-			symbols: [
-				"MathFunc$ebnf$1",
-				"Space",
-				"MathOps",
-				"Space",
-				"AnyVar"
-			],
-			postprocess: ([e, t, n, r, i]) => (e || "") + n + i
-		},
-		{
-			name: "AnyVar",
-			symbols: ["Number"]
-		},
-		{
-			name: "AnyVar",
-			symbols: ["PlainVariable"]
-		},
-		{
-			name: "AnyVar",
-			symbols: ["ObjectVariable"]
-		},
-		{
-			name: "AnyVar",
-			symbols: ["StringLiteral"]
-		},
-		{
-			name: "AnyVar",
-			symbols: ["ParenthesisStatement"]
-		},
-		{
-			name: "ObjectVariable",
-			symbols: [
-				"PlainVariable",
-				"DOT",
-				"PlainVariable"
-			],
-			postprocess: ([e, t, n]) => e + t + n
-		},
-		{
-			name: "PlainVariable$ebnf$1",
-			symbols: []
-		},
-		{
-			name: "PlainVariable$ebnf$1",
-			symbols: ["PlainVariable$ebnf$1", "AnyValidCharacter"],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "PlainVariable",
-			symbols: ["CharOrLetter", "PlainVariable$ebnf$1"],
-			postprocess: ([e, t]) => e + t.join("")
-		},
-		{
-			name: "StringLiteral$ebnf$1",
-			symbols: []
-		},
-		{
-			name: "StringLiteral$ebnf$1",
-			symbols: ["StringLiteral$ebnf$1", /[^|]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "StringLiteral",
-			symbols: [
-				"QUOTE",
-				"StringLiteral$ebnf$1",
-				"QUOTE"
-			],
-			postprocess: ([e, t, n]) => e + t.join("") + n
-		},
-		{
-			name: "Number",
-			symbols: ["Integer"],
-			postprocess: u
-		},
-		{
-			name: "Number",
-			symbols: ["Float"],
-			postprocess: u
-		},
-		{
-			name: "Float$ebnf$1",
-			symbols: [/[0-9]/]
-		},
-		{
-			name: "Float$ebnf$1",
-			symbols: ["Float$ebnf$1", /[0-9]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "Float",
-			symbols: [
-				"Integer",
-				{ literal: "." },
-				"Float$ebnf$1"
-			],
-			postprocess: ([e, t, n]) => e + t + n.join("")
-		},
-		{
-			name: "Integer$ebnf$1",
-			symbols: [{ literal: "-" }],
-			postprocess: u
-		},
-		{
-			name: "Integer$ebnf$1",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Integer",
-			symbols: ["Integer$ebnf$1", "Zero"],
-			postprocess: ([e, t]) => (e ? "-" : "") + t
-		},
-		{
-			name: "Integer$ebnf$2",
-			symbols: [{ literal: "-" }],
-			postprocess: u
-		},
-		{
-			name: "Integer$ebnf$2",
-			symbols: [],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Integer$ebnf$3",
-			symbols: []
-		},
-		{
-			name: "Integer$ebnf$3",
-			symbols: ["Integer$ebnf$3", "Digit"],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "Integer",
-			symbols: [
-				"Integer$ebnf$2",
-				"NonzeroNumber",
-				"Integer$ebnf$3"
-			],
-			postprocess: ([e, t, n]) => (e ? "-" : "") + t + n.join("")
-		},
-		{
-			name: "MathOps",
-			symbols: [/[*+-/]/]
-		},
-		{
-			name: "ArgSeparator",
-			symbols: [{ literal: ":" }]
-		},
-		{
-			name: "Zero",
-			symbols: [{ literal: "0" }]
-		},
-		{
-			name: "AnyValidCharacter",
-			symbols: ["Letter"]
-		},
-		{
-			name: "AnyValidCharacter",
-			symbols: ["UsableCharacter"]
-		},
-		{
-			name: "AnyValidCharacter",
-			symbols: ["Digit"]
-		},
-		{
-			name: "CharOrLetter",
-			symbols: ["UsableCharacter"]
-		},
-		{
-			name: "CharOrLetter",
-			symbols: ["Letter"]
-		},
-		{
-			name: "UsableCharacter",
-			symbols: [/[\$\£\&\^\*\_\#]/]
-		},
-		{
-			name: "Letter",
-			symbols: [/[a-zA-Z]/]
-		},
-		{
-			name: "Digit",
-			symbols: [/[0-9]/]
-		},
-		{
-			name: "NonzeroNumber",
-			symbols: [/[1-9]/]
-		},
-		{
-			name: "ObjectLeftBrace",
-			symbols: [{ literal: "{" }]
-		},
-		{
-			name: "ObjectRightBrace",
-			symbols: [{ literal: "}" }]
-		},
-		{
-			name: "EOLPIPE",
-			symbols: ["EOL"]
-		},
-		{
-			name: "EOLPIPE",
-			symbols: ["PIPE"],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "PIPE",
-			symbols: [{ literal: "|" }]
-		},
-		{
-			name: "DOT",
-			symbols: [{ literal: "." }]
-		},
-		{
-			name: "QUOTE",
-			symbols: [{ literal: "\"" }]
-		},
-		{
-			name: "QUOTE",
-			symbols: [{ literal: "'" }]
-		},
-		{
-			name: "_$ebnf$1",
-			symbols: []
-		},
-		{
-			name: "_$ebnf$1",
-			symbols: ["_$ebnf$1", /[\s]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "_",
-			symbols: ["_$ebnf$1"],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "__$ebnf$1",
-			symbols: [/[\s]/]
-		},
-		{
-			name: "__$ebnf$1",
-			symbols: ["__$ebnf$1", /[\s]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "__",
-			symbols: ["__$ebnf$1"],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "EOL",
-			symbols: [/[\r\n]/],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Space$ebnf$1",
-			symbols: []
-		},
-		{
-			name: "Space$ebnf$1",
-			symbols: ["Space$ebnf$1", /[ ]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "Space",
-			symbols: ["Space$ebnf$1"],
-			postprocess: function(e) {
-				return null;
-			}
-		},
-		{
-			name: "Spaces$ebnf$1",
-			symbols: [/[ ]/]
-		},
-		{
-			name: "Spaces$ebnf$1",
-			symbols: ["Spaces$ebnf$1", /[ ]/],
-			postprocess: function(e) {
-				return e[0].concat([e[1]]);
-			}
-		},
-		{
-			name: "Spaces",
-			symbols: ["Spaces$ebnf$1"],
-			postprocess: function(e) {
-				return null;
-			}
+}) : i, e)), u = /* @__PURE__ */ s(((e, t) => {
+	(function() {
+		function e(e) {
+			return e[0];
 		}
-	],
-	ParserStart: "Main"
-};
-typeof module < "u" && module.exports !== void 0 ? module.exports = d : window.grammar = d;
-//#endregion
-//#region src/transpile.js
-var f = /* @__PURE__ */ l((/* @__PURE__ */ s(((e, t) => {
+		var n = {
+			Lexer: void 0,
+			ParserRules: [
+				{
+					name: "Main$ebnf$1",
+					symbols: ["EOL"]
+				},
+				{
+					name: "Main$ebnf$1",
+					symbols: ["Main$ebnf$1", "EOL"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "Main",
+					symbols: [
+						"Chain",
+						"Main$ebnf$1",
+						"Space",
+						"Main"
+					],
+					postprocess: (e) => [e[0]].concat(e[3]).join(";")
+				},
+				{
+					name: "Main$ebnf$2",
+					symbols: ["EOL"],
+					postprocess: e
+				},
+				{
+					name: "Main$ebnf$2",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Main",
+					symbols: [
+						"Chain",
+						"Space",
+						"Main$ebnf$2"
+					],
+					postprocess: (e) => e[0] + ";"
+				},
+				{
+					name: "Chain",
+					symbols: [
+						"FunctionStatement",
+						"Space",
+						"PIPE",
+						"Space",
+						"Chain"
+					],
+					postprocess: (e) => [e[0]].concat(e[4]).join(";")
+				},
+				{
+					name: "Chain$ebnf$1",
+					symbols: ["PIPE"],
+					postprocess: e
+				},
+				{
+					name: "Chain$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Chain",
+					symbols: [
+						"FunctionStatement",
+						"Space",
+						"Chain$ebnf$1"
+					],
+					postprocess: (e) => e[0]
+				},
+				{
+					name: "FunctionStatement$subexpression$1",
+					symbols: ["FunctionName"],
+					postprocess: ([e]) => (e = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
+					symbols: ["AnyArgs"],
+					postprocess: e
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
+					symbols: [
+						"FunctionName",
+						"Space",
+						{ literal: "(" },
+						"Space",
+						"FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
+						"Space",
+						{ literal: ")" }
+					],
+					postprocess: ([e, t, n, r, i, a, o]) => e + n + (Array.isArray(i) ? i.join(",") : i) + o
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
+					symbols: ["ObjArgs"],
+					postprocess: function([e]) {
+						return "{" + (Array.isArray(e) ? e.join(",") : e) + "}";
+					}
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1",
+					symbols: ["AnyArgs"],
+					postprocess: function([e]) {
+						return Array.isArray(e) ? e.join(",") : e || "";
+					}
+				},
+				{
+					name: "FunctionStatement$ebnf$1$subexpression$1",
+					symbols: ["Spaces", "FunctionStatement$ebnf$1$subexpression$1$subexpression$1"],
+					postprocess: (e) => {
+						let t = "";
+						for (let n of e) n && (t += n);
+						return t;
+					}
+				},
+				{
+					name: "FunctionStatement$ebnf$1",
+					symbols: ["FunctionStatement$ebnf$1$subexpression$1"],
+					postprocess: e
+				},
+				{
+					name: "FunctionStatement$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "FunctionStatement",
+					symbols: ["FunctionStatement$subexpression$1", "FunctionStatement$ebnf$1"],
+					postprocess: (e) => e.join("") + ")"
+				},
+				{
+					name: "FunctionName",
+					symbols: ["PlainVariable"],
+					postprocess: e
+				},
+				{
+					name: "AnyArgs",
+					symbols: [
+						"AnyArg",
+						"Spaces",
+						"AnyArgs"
+					],
+					postprocess: ([e, t, n]) => [e].concat(n)
+				},
+				{
+					name: "AnyArgs",
+					symbols: ["AnyArg"],
+					postprocess: e
+				},
+				{
+					name: "ObjArgs",
+					symbols: [
+						"ObjArg",
+						"Spaces",
+						"ObjArgs"
+					],
+					postprocess: ([e, t, n]) => [e].concat(n)
+				},
+				{
+					name: "ObjArgs",
+					symbols: ["ObjArg"],
+					postprocess: e
+				},
+				{
+					name: "ObjArg$ebnf$1",
+					symbols: ["Letter"]
+				},
+				{
+					name: "ObjArg$ebnf$1",
+					symbols: ["ObjArg$ebnf$1", "Letter"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "ObjArg",
+					symbols: [
+						"ObjArg$ebnf$1",
+						"Space",
+						"ArgSeparator",
+						"Space",
+						"AnyArg"
+					],
+					postprocess: ([e, t, n, r, i]) => e.join("") + n + i
+				},
+				{
+					name: "AnyArg",
+					symbols: ["AnyVar"]
+				},
+				{
+					name: "AnyArg",
+					symbols: ["MathFuncs"]
+				},
+				{
+					name: "ArrayStatement",
+					symbols: [
+						{ literal: "[" },
+						"Space",
+						"BasicStatement",
+						"Space",
+						{ literal: "]" }
+					],
+					postprocess: ([e, t, n, r, i]) => e + n + i
+				},
+				{
+					name: "ParenthesisStatement",
+					symbols: [
+						{ literal: "(" },
+						"Space",
+						"BasicStatement",
+						"Space",
+						{ literal: ")" }
+					],
+					postprocess: ([e, t, n, r, i]) => e + n + i
+				},
+				{
+					name: "BasicStatement",
+					symbols: ["AnyVar"]
+				},
+				{
+					name: "BasicStatement",
+					symbols: ["MathFuncs"]
+				},
+				{
+					name: "MathFuncs",
+					symbols: [
+						"MathFunc",
+						"Space",
+						"MathFuncs"
+					],
+					postprocess: ([e, t, n]) => [e].concat(n).join("")
+				},
+				{
+					name: "MathFuncs",
+					symbols: ["MathFunc"],
+					postprocess: e
+				},
+				{
+					name: "MathFunc$ebnf$1",
+					symbols: ["AnyVar"],
+					postprocess: e
+				},
+				{
+					name: "MathFunc$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "MathFunc",
+					symbols: [
+						"MathFunc$ebnf$1",
+						"Space",
+						"MathOps",
+						"Space",
+						"AnyVar"
+					],
+					postprocess: ([e, t, n, r, i]) => (e || "") + n + i
+				},
+				{
+					name: "ArrayAccess$subexpression$1",
+					symbols: ["ArrayAccess"]
+				},
+				{
+					name: "ArrayAccess$subexpression$1",
+					symbols: ["ObjectVariable"]
+				},
+				{
+					name: "ArrayAccess$subexpression$1",
+					symbols: ["PlainVariable"]
+				},
+				{
+					name: "ArrayAccess$subexpression$1",
+					symbols: ["ComplexVar"]
+				},
+				{
+					name: "ArrayAccess",
+					symbols: [
+						"ArrayAccess$subexpression$1",
+						"Spaces",
+						"ArrayStatement"
+					],
+					postprocess: ([e, t, n]) => e + n
+				},
+				{
+					name: "ComplexVar$ebnf$1",
+					symbols: ["AnyArgs"],
+					postprocess: e
+				},
+				{
+					name: "ComplexVar$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "ComplexVar",
+					symbols: [
+						"ComplexVar",
+						"Space",
+						{ literal: "(" },
+						"Space",
+						"ComplexVar$ebnf$1",
+						"Space",
+						{ literal: ")" }
+					],
+					postprocess: ([e, t, n, r, i, a, o]) => {
+						let s = Array.isArray(i) ? i.join(",") : i || "";
+						return e + n + s + o;
+					}
+				},
+				{
+					name: "ComplexVar",
+					symbols: [
+						"ComplexVar",
+						"Space",
+						"ArrayStatement"
+					],
+					postprocess: ([e, t, n]) => e + n
+				},
+				{
+					name: "ComplexVar",
+					symbols: ["ObjectVariable"],
+					postprocess: e
+				},
+				{
+					name: "ComplexVar",
+					symbols: ["PlainVariable"],
+					postprocess: e
+				},
+				{
+					name: "AnyVar",
+					symbols: ["Number"]
+				},
+				{
+					name: "AnyVar",
+					symbols: ["ComplexVar"]
+				},
+				{
+					name: "AnyVar",
+					symbols: ["StringLiteral"]
+				},
+				{
+					name: "AnyVar",
+					symbols: ["ParenthesisStatement"]
+				},
+				{
+					name: "AnyVar",
+					symbols: ["ArrayStatement"]
+				},
+				{
+					name: "ObjectVariable",
+					symbols: [
+						"PlainVariable",
+						"DOT",
+						"PlainVariable"
+					],
+					postprocess: ([e, t, n]) => e + t + n
+				},
+				{
+					name: "PlainVariable$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "PlainVariable$ebnf$1",
+					symbols: ["PlainVariable$ebnf$1", "AnyValidCharacter"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "PlainVariable",
+					symbols: ["CharOrLetter", "PlainVariable$ebnf$1"],
+					postprocess: ([e, t]) => e + t.join("")
+				},
+				{
+					name: "StringLiteral$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "StringLiteral$ebnf$1",
+					symbols: ["StringLiteral$ebnf$1", /[^"]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "StringLiteral",
+					symbols: [
+						{ literal: "\"" },
+						"StringLiteral$ebnf$1",
+						{ literal: "\"" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "StringLiteral$ebnf$2",
+					symbols: []
+				},
+				{
+					name: "StringLiteral$ebnf$2",
+					symbols: ["StringLiteral$ebnf$2", /[^']/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "StringLiteral",
+					symbols: [
+						{ literal: "'" },
+						"StringLiteral$ebnf$2",
+						{ literal: "'" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "Number",
+					symbols: ["Integer"],
+					postprocess: e
+				},
+				{
+					name: "Number",
+					symbols: ["Float"],
+					postprocess: e
+				},
+				{
+					name: "Float$ebnf$1",
+					symbols: [/[0-9]/]
+				},
+				{
+					name: "Float$ebnf$1",
+					symbols: ["Float$ebnf$1", /[0-9]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "Float",
+					symbols: [
+						"Integer",
+						{ literal: "." },
+						"Float$ebnf$1"
+					],
+					postprocess: ([e, t, n]) => e + t + n.join("")
+				},
+				{
+					name: "Integer$ebnf$1",
+					symbols: [{ literal: "-" }],
+					postprocess: e
+				},
+				{
+					name: "Integer$ebnf$1",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Integer",
+					symbols: ["Integer$ebnf$1", "Zero"],
+					postprocess: ([e, t]) => (e ? "-" : "") + t
+				},
+				{
+					name: "Integer$ebnf$2",
+					symbols: [{ literal: "-" }],
+					postprocess: e
+				},
+				{
+					name: "Integer$ebnf$2",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Integer$ebnf$3",
+					symbols: []
+				},
+				{
+					name: "Integer$ebnf$3",
+					symbols: ["Integer$ebnf$3", "Digit"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "Integer",
+					symbols: [
+						"Integer$ebnf$2",
+						"NonzeroNumber",
+						"Integer$ebnf$3"
+					],
+					postprocess: ([e, t, n]) => (e ? "-" : "") + t + n.join("")
+				},
+				{
+					name: "MathOps",
+					symbols: [/[*+-/]/]
+				},
+				{
+					name: "ArgSeparator",
+					symbols: [{ literal: ":" }]
+				},
+				{
+					name: "Zero",
+					symbols: [{ literal: "0" }]
+				},
+				{
+					name: "AnyValidCharacter",
+					symbols: ["Letter"]
+				},
+				{
+					name: "AnyValidCharacter",
+					symbols: ["UsableCharacter"]
+				},
+				{
+					name: "AnyValidCharacter",
+					symbols: ["Digit"]
+				},
+				{
+					name: "CharOrLetter",
+					symbols: ["UsableCharacter"]
+				},
+				{
+					name: "CharOrLetter",
+					symbols: ["Letter"]
+				},
+				{
+					name: "UsableCharacter",
+					symbols: [/[\$\£\&\^\*\_\#]/]
+				},
+				{
+					name: "Letter",
+					symbols: [/[a-zA-Z]/]
+				},
+				{
+					name: "Digit",
+					symbols: [/[0-9]/]
+				},
+				{
+					name: "NonzeroNumber",
+					symbols: [/[1-9]/]
+				},
+				{
+					name: "ObjectLeftBrace",
+					symbols: [{ literal: "{" }]
+				},
+				{
+					name: "ObjectRightBrace",
+					symbols: [{ literal: "}" }]
+				},
+				{
+					name: "EOLPIPE",
+					symbols: ["EOL"]
+				},
+				{
+					name: "EOLPIPE",
+					symbols: ["PIPE"],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "PIPE",
+					symbols: [{ literal: "|" }]
+				},
+				{
+					name: "DOT",
+					symbols: [{ literal: "." }]
+				},
+				{
+					name: "_$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "_$ebnf$1",
+					symbols: ["_$ebnf$1", /[\s]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "_",
+					symbols: ["_$ebnf$1"],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "__$ebnf$1",
+					symbols: [/[\s]/]
+				},
+				{
+					name: "__$ebnf$1",
+					symbols: ["__$ebnf$1", /[\s]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "__",
+					symbols: ["__$ebnf$1"],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "EOL",
+					symbols: [/[\r\n]/],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Space$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "Space$ebnf$1",
+					symbols: ["Space$ebnf$1", /[ ]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "Space",
+					symbols: ["Space$ebnf$1"],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "Spaces$ebnf$1",
+					symbols: [/[ ]/]
+				},
+				{
+					name: "Spaces$ebnf$1",
+					symbols: ["Spaces$ebnf$1", /[ ]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "Spaces",
+					symbols: ["Spaces$ebnf$1"],
+					postprocess: function(e) {
+						return null;
+					}
+				}
+			],
+			ParserStart: "Main"
+		};
+		t !== void 0 && t.exports !== void 0 ? t.exports = n : window.grammar = n;
+	})();
+})), d = /* @__PURE__ */ s(((e, t) => {
 	(function(e, n) {
 		typeof t == "object" && t.exports ? t.exports = n() : e.nearley = n();
 	})(e, function() {
@@ -847,39 +921,39 @@ var f = /* @__PURE__ */ l((/* @__PURE__ */ s(((e, t) => {
 			Rule: e
 		};
 	});
-})))(), 1), p = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, m = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g, h = /([\n\s])*lp(\.)/g, g = /(?:^|\s|;)(global)(?:\s+)/g;
-function _(t, n) {
-	let r = new f.default.Parser(f.default.Grammar.fromCompiled(d));
-	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, ""), t = t.replaceAll(g, "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(p, (t, n) => {
+})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g, g = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
+function v(t, n) {
+	let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
+	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, ""), t = t.replaceAll(_, "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
 		e.debug("Match: " + n);
 		let i = "";
 		return n.split(/[\r\n]/).map((t) => {
 			t = t.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, ""), t.length !== 0 && (r.feed(t + "|\n"), e.debug(`block parser state ${r.results[0]}`), e.debug(`BLOCK Line: !!!${t}!!!`));
 		}), i += r.results[0], "\n" + i + "\n";
-	}), e.info("code AFTER block-grammar processing -------------------------------"), e.info(t), e.info("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
-		let r = new f.default.Parser(f.default.Grammar.fromCompiled(d));
+	}), e.info("code AFTER block-grammar processing -------------------------------"), e.info(t), e.info("========================= -------------------------------"), t = t.replaceAll(h, (t, n) => {
+		let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
 		e.debug("!!!" + t + "!!!"), e.debug("!!!" + n + "!!!");
 		let i = "", a = n;
 		return a && (r.feed(a + "\n"), i = r.results[0]), "\n" + i;
-	}), n && (t = t.replace(h, `$1${n}$2`)), e.debug("code AFTER one-line-grammar processing -------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t;
+	}), n && (t = t.replace(g, `$1${n}$2`)), e.debug("code AFTER one-line-grammar processing -------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t;
 }
 "stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude".split("|");
-var v = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)[^a-zA-Z0-9\_]/;
+var y = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)[^a-zA-Z0-9\_]/;
 //#endregion
 //#region src/lpmode.js
-function y(e) {
+function b(e) {
 	e.defineMode("lp", function(t, n) {
 		return e.overlayMode(e.getMode(t, n.backdrop || "javascript"), { token: function(e, t) {
 			let n = "";
 			if (!e.eol()) {
-				let t = e.match(v, !1);
+				let t = e.match(y, !1);
 				if (t) {
 					let n = t[1].length;
 					for (; n--;) e.eat(() => !0);
 					return "lp";
 				}
 			}
-			if (e.eatSpace(), e.match(v, !1)) return null;
+			if (e.eatSpace(), e.match(y, !1)) return null;
 			for (; (n = e.eat(/[^\s]/)) && n !== ".";);
 			return null;
 		} });
@@ -887,7 +961,7 @@ function y(e) {
 }
 //#endregion
 //#region src/strudel.js
-function b(e, t = 4) {
+function x(e, t = 4) {
 	let n = e.replace(/([^\s\[\]]+)!(\d+)/g, (e, t, n) => Array(parseInt(n, 10)).fill(t).join(" ")).match(/\[|\]|[^\s\[\]]+/g);
 	if (!n) return [];
 	let r = [], i = [r];
@@ -931,4 +1005,4 @@ function b(e, t = 4) {
 	return s(r, t), o;
 }
 //#endregion
-export { y as addCMMode, b as parseStrudel, _ as transpile };
+export { b as addCMMode, x as parseStrudel, v as transpile };

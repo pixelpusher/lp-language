@@ -22,6 +22,22 @@ Install dependencies using npm:
 npm install
 ```
 
+### Compiling the grammar
+
+You need to compile the [Nearley grammar](./lang/liveprinter.ne) if you change it.  First, you need to install the nearley compiler:
+
+```bash
+npm i -g nearley
+```
+
+Then, you compile the grammar using `nearleyc` and save it as javascript:
+
+```bash
+nearleyc lang/liveprinter.ne -o ./src/lpgrammar.js
+```
+
+Done!
+
 ## Test
 
 ```bash
