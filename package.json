@@ -3,9 +3,11 @@
   "private": false,
   "version": "0.1.1",
   "type": "module",
-  "files": ["dist"],
-  "main" : "./dist/lp-language.umd.cjs",
-  "module":"./dist/lp-language.js",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/lp-language.umd.cjs",
+  "module": "./dist/lp-language.js",
   "exports": {
     ".": {
       "import": "./dist/lp-language.js",
@@ -18,11 +20,12 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^29.0.2",
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "jsdom": "^28.1.0",
+    "liveprinter-core": "github:pixelpusher/liveprinter-core",
     "nearley": "^2.20.1",
-    "vite": "^8.0.8",
-    "liveprinter-core": "github:pixelpusher/liveprinter-core"
-    
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "liveprinter-utils": "github:pixelpusher/lp-utils"

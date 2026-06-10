@@ -7,6 +7,7 @@ A JavaScript transpiler that converts LivePrinter's minigrammar syntax into vali
 ## Table of Contents
 
 - [Installation](#installation)
+- [Test](#test)
 - [Quick Start](#quick-start)
 - [Core Functions](#core-functions)
 - [Grammar Syntax](#grammar-syntax)
@@ -19,6 +20,12 @@ Install dependencies using npm:
 
 ```bash
 npm install
+```
+
+## Test
+
+```bash
+npx vitest
 ```
 
 ## Quick Start

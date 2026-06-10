@@ -1,5 +1,4 @@
 import { transpile, grammarBlockRegex, grammarOneLineRegex, globalRegex } from "./transpile";
-import { test as testStrudelParser } from "./strudel";
 import { LivePrinter } from "liveprinter-core";
 import { Logger } from "liveprinter-utils";
 
@@ -18,8 +17,7 @@ const eventHandler = {
   },
 };
 
-// test strudent parser
-testStrudelParser();
+// strudel tests moved to Vitest; not run in browser entry
 
 // run basic grammar tests
 
