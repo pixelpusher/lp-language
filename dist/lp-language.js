@@ -991,13 +991,20 @@ function b(e) {
 //#endregion
 //#region src/strudel.js
 function x(e, t = 4) {
-	let n = e.replace(/(\[[^\]]*\]|[^\s\[\]]+)!(\d+)/g, (e, t, n) => Array(parseInt(n, 10)).fill(t).join(" ")).match(/\[|\]|[^\s\[\]]+/g);
+	let n = e.match(/\[|\]|!\d+|[^\s\[\]!]+/g);
 	if (!n) return [];
 	let r = [], i = [r];
 	for (let e of n) if (e === "[") {
 		let e = [];
 		i[i.length - 1].push(e), i.push(e);
-	} else e === "]" ? i.length > 1 && i.pop() : i[i.length - 1].push(e);
+	} else if (e === "]") i.length > 1 && i.pop();
+	else if (e.startsWith("!")) {
+		let t = parseInt(e.slice(1), 10), n = i[i.length - 1];
+		if (n.length > 0 && !isNaN(t) && t > 0) {
+			let e = n.pop();
+			for (let r = 0; r < t; r++) n.push(e);
+		}
+	} else i[i.length - 1].push(e);
 	function a(e) {
 		if (Number.isInteger(e)) return e + "b";
 		for (let t = 2; t <= 64; t *= 2) {

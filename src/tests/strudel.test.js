@@ -58,4 +58,14 @@ describe('Strudel parser', () => {
       ['a', '0.667b'], ['b', '0.667b'], ['c', '0.667b']
     ]);
   });
+
+
+  test('Top-level Bracketed Replication complex', () => {
+    const out = parseStrudel('[a b [c d]!2]!2', 1);
+    expect(out).toEqual([
+      ['a', '1/8b'], ['b', '1/8b'], ['c', '1/16b'], ['d', '1/16b'], ['c', '1/16b'], ['d', '1/16b'],
+      ['a', '1/8b'], ['b', '1/8b'], ['c', '1/16b'], ['d', '1/16b'], ['c', '1/16b'], ['d', '1/16b'],
+    ]);
+  });
+
 });

@@ -1,17 +1,13 @@
-
 /**
- * Parses a basic Strudel/TidalCycles mini-notation string into a 2D array. 
+ * Parses a Strudel/TidalCycles mini-notation string into a 2D array. 
+ * Supports nested repeats, fractions, and multipliers.
  * @param {String} pattern 
  * @param {Number} totalBeats 
  * @returns {Array} 2D array in liveprinter notation
  */
 export function parseStrudel(pattern, totalBeats = 4) {
 
-    const expandedPattern = pattern.replace(/(\[[^\]]*\]|[^\s\[\]]+)!(\d+)/g, (match, token, count) => {
-        return Array(parseInt(count, 10)).fill(token).join(' ');
-    });
-    
-    const tokens = expandedPattern.match(/\[|\]|[^\s\[\]]+/g);
+    const tokens = pattern.match(/\[|\]|!\d+|[^\s\[\]!]+/g);
     if (!tokens) return [];
     
     const root = [];
@@ -24,6 +20,17 @@ export function parseStrudel(pattern, totalBeats = 4) {
             stack.push(newList);
         } else if (token === ']') {
             if (stack.length > 1) stack.pop();
+        } else if (token.startsWith('!')) {
+            const count = parseInt(token.slice(1), 10);
+            const currentList = stack[stack.length - 1];
+            
+            if (currentList.length > 0 && !isNaN(count) && count > 0) {
+                const lastNode = currentList.pop();
+                // FIX: Replicate inline as siblings instead of wrapping in a new array
+                for (let i = 0; i < count; i++) {
+                    currentList.push(lastNode);
+                }
+            }
         } else {
             stack[stack.length - 1].push(token);
         }
@@ -90,5 +97,3 @@ export function parseStrudel(pattern, totalBeats = 4) {
     traverse(root, totalBeats);
     return result;
 }
-
-
