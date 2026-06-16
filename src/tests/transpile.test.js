@@ -75,6 +75,15 @@ describe('Nearley parser', () => {
         expect(out).toBe('lp.speed(\"a#3\");');
     });
 
+    test('Function with note speed auto-quoting and chaining', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = "speed a3 | mov x:50 y:30\n";
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBeGreaterThan(0);
+        const out = transpiled.results[0];
+        expect(out).toBe('lp.speed(\"a3\");await lp.mov({x:50,y:30});');
+    });
+
     test('Function with nested parentheses', () => {
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
         const line = "move (10)\n";

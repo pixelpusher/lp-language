@@ -11,7 +11,7 @@ Chain -> FunctionStatement Space PIPE Space Chain {% d => [d[0]].concat(d[4]).jo
 
 FunctionStatement -> (FunctionName {% 
         ([name]) => {
-            const asyncFunctionsInAPIRegex = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)$/;
+            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/;
             
             const asyncFuncCall = asyncFunctionsInAPIRegex.test(name);
 
@@ -99,7 +99,16 @@ AnyVar -> MusicNote | Number # int or float
 
 ObjectVariable -> PlainVariable DOT PlainVariable {% ([pv1, dot, pv2])=> pv1 + dot + pv2 %} 
 
-PlainVariable -> CharOrLetter AnyValidCharacter:* {% ([first, second])=> first + second.join('') %}
+PlainVariable -> CharOrLetter AnyValidCharacter:* {% 
+    ([first, second], location, reject) => {
+        const str = first + second.join('');
+        // If it perfectly matches a MusicNote, reject this branch to remove ambiguity
+        if (/^[\$\£\&\^\*\_\#a-zA-Z][#b]?-?(?:0|[1-9][0-9]*)$/.test(str)) {
+            return reject;
+        }
+        return str;
+    } 
+%}
 
 MusicNote -> CharOrLetter SharpOrFlat:? Integer {% ([c,sf,oct]) => `"${c + (sf || "") + oct}"`%}
 
@@ -114,7 +123,7 @@ Float -> Integer "." [0-9]:+        {% ([num1, dot, num2]) => num1 + dot + num2.
 Integer -> "-":? Zero {% ([sign, num1]) => (sign ? "-" : "") + num1 %} | 
         "-":? NonzeroNumber Digit:* {% ([sign, num1, num2]) => (sign ? "-" : "") + num1 + num2.join('') %}
 
-MathOps -> [*+-/]
+MathOps -> [-*+/]
 
 ArgSeparator -> ":"
 

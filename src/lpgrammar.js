@@ -17,7 +17,7 @@ var grammar = {
     {"name": "Chain", "symbols": ["FunctionStatement", "Space", "Chain$ebnf$1"], "postprocess": d => d[0]},
     {"name": "FunctionStatement$subexpression$1", "symbols": ["FunctionName"], "postprocess":  
         ([name]) => {
-            const asyncFunctionsInAPIRegex = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)$/;
+            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/;
             
             const asyncFuncCall = asyncFunctionsInAPIRegex.test(name);
         
@@ -91,7 +91,16 @@ var grammar = {
     {"name": "ObjectVariable", "symbols": ["PlainVariable", "DOT", "PlainVariable"], "postprocess": ([pv1, dot, pv2])=> pv1 + dot + pv2},
     {"name": "PlainVariable$ebnf$1", "symbols": []},
     {"name": "PlainVariable$ebnf$1", "symbols": ["PlainVariable$ebnf$1", "AnyValidCharacter"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
-    {"name": "PlainVariable", "symbols": ["CharOrLetter", "PlainVariable$ebnf$1"], "postprocess": ([first, second])=> first + second.join('')},
+    {"name": "PlainVariable", "symbols": ["CharOrLetter", "PlainVariable$ebnf$1"], "postprocess":  
+        ([first, second], location, reject) => {
+            const str = first + second.join('');
+            // If it perfectly matches a MusicNote, reject this branch to remove ambiguity
+            if (/^[\$\£\&\^\*\_\#a-zA-Z][#b]?-?(?:0|[1-9][0-9]*)$/.test(str)) {
+                return reject;
+            }
+            return str;
+        } 
+        },
     {"name": "MusicNote$ebnf$1", "symbols": ["SharpOrFlat"], "postprocess": id},
     {"name": "MusicNote$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
     {"name": "MusicNote", "symbols": ["CharOrLetter", "MusicNote$ebnf$1", "Integer"], "postprocess": ([c,sf,oct]) => `"${c + (sf || "") + oct}"`},
@@ -114,7 +123,7 @@ var grammar = {
     {"name": "Integer$ebnf$3", "symbols": []},
     {"name": "Integer$ebnf$3", "symbols": ["Integer$ebnf$3", "Digit"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "Integer", "symbols": ["Integer$ebnf$2", "NonzeroNumber", "Integer$ebnf$3"], "postprocess": ([sign, num1, num2]) => (sign ? "-" : "") + num1 + num2.join('')},
-    {"name": "MathOps", "symbols": [/[*+-/]/]},
+    {"name": "MathOps", "symbols": [/[-*+/]/]},
     {"name": "ArgSeparator", "symbols": [{"literal":":"}]},
     {"name": "Zero", "symbols": [{"literal":"0"}]},
     {"name": "AnyValidCharacter", "symbols": ["Letter"]},
