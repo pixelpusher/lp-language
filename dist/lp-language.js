@@ -94,7 +94,7 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				{
 					name: "FunctionStatement$subexpression$1",
 					symbols: ["FunctionName"],
-					postprocess: ([e]) => (e = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
+					postprocess: ([e]) => (e = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
 				},
 				{
 					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
@@ -406,7 +406,10 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				{
 					name: "PlainVariable",
 					symbols: ["CharOrLetter", "PlainVariable$ebnf$1"],
-					postprocess: ([e, t]) => e + t.join("")
+					postprocess: ([e, t], n, r) => {
+						let i = e + t.join("");
+						return /^[\$\£\&\^\*\_\#a-zA-Z][#b]?-?(?:0|[1-9][0-9]*)$/.test(i) ? r : i;
+					}
 				},
 				{
 					name: "MusicNote$ebnf$1",
@@ -550,7 +553,7 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				},
 				{
 					name: "MathOps",
-					symbols: [/[*+-/]/]
+					symbols: [/[-*+/]/]
 				},
 				{
 					name: "ArgSeparator",
