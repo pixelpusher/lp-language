@@ -17,7 +17,7 @@ var grammar = {
     {"name": "Chain", "symbols": ["FunctionStatement", "Space", "Chain$ebnf$1"], "postprocess": d => d[0]},
     {"name": "FunctionStatement$subexpression$1", "symbols": ["FunctionName"], "postprocess":  
         ([name]) => {
-            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/;
+            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay|tur|tur2)$/;
             
             const asyncFuncCall = asyncFunctionsInAPIRegex.test(name);
         

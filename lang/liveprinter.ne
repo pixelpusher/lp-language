@@ -11,7 +11,7 @@ Chain -> FunctionStatement Space PIPE Space Chain {% d => [d[0]].concat(d[4]).jo
 
 FunctionStatement -> (FunctionName {% 
         ([name]) => {
-            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/;
+            const asyncFunctionsInAPIRegex = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay|tur|tur2)$/;
             
             const asyncFuncCall = asyncFunctionsInAPIRegex.test(name);
 

@@ -32,7 +32,6 @@ try {
     let grammar = fs.readFileSync(grammarPath, 'utf8');
 
     // 3. Build the regex string matching the async functions
-    const regexString = `/^(${asyncFunctions.join('|')})$/`;
     const regexString = `/^(${allAsyncFunctions.join('|')})$/`;
 
     // 4. Inject the new regex into the grammar file using regex replace
@@ -43,7 +42,7 @@ try {
 
     // 5. Save the updated grammar back to the file
     fs.writeFileSync(grammarPath, grammar);
-    console.log(`✔️ Updated liveprinter.ne with ${asyncFunctions.length} async functions.`);
+    console.log(`✔️ Updated liveprinter.ne with ${allAsyncFunctions.length} async functions.`);
 
     // 6. Automatically trigger Nearley compilation
     console.log('⚙️ Compiling grammar using nearleyc...');

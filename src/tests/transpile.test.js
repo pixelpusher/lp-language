@@ -66,11 +66,11 @@ describe('Nearley parser', () => {
         expect(out).toBe('await lp.mov2({x:40,y:60,speed:\"a#3\"});');
 
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
-        line = "mov2 x:55 y:22 speed:c4\n";
+        line = "mov2 x:lp.cx y:lp.cy speed:c6 z:0.3\n";
         transpiled = lineparser.feed(line);
         expect(transpiled.results.length).toBeGreaterThan(0);
         out = transpiled.results[0];
-        expect(out).toBe('await lp.mov2({x:55,y:22,speed:\"c4\"});');
+        expect(out).toBe('await lp.mov2({x:lp.cx,y:lp.cy,speed:\"c6\",z:0.3});');
 
     });
 
