@@ -16,36 +16,15 @@ A JavaScript transpiler that converts LivePrinter's minigrammar syntax into vali
 
 ## Installation
 
+Install into your project using the github link: `npm i git+https://github.com/pixelpusher/lp-language.git`
+
+## Development 
+
 Install dependencies using npm:
 
 ```bash
 npm install
 ```
-
-### Compiling the grammar
-
-You need to compile the [Nearley grammar](./lang/liveprinter.ne) if you change it.  First, you need to install the nearley compiler:
-
-```bash
-npm i -g nearley
-```
-
-Then, you compile the grammar using `nearleyc` and save it as javascript:
-
-```bash
-nearleyc lang/liveprinter.ne -o ./src/lpgrammar.js
-```
-
-Done!
-
-## Test
-
-```bash
-npx vitest
-```
-
-## Quick Start
-
 Start the development server to see the transpiler in action:
 
 ```bash
@@ -56,6 +35,22 @@ Build the project for production:
 
 ```bash
 npm build
+```
+
+### Compiling the grammar
+
+The [Nearley grammar](./lang/liveprinter.ne) gets auto-compiled each time you run a build or dev session -- if you change it. But first, you need to install the nearley compiler:
+
+```bash
+npm i -g nearley
+```
+
+Don't manually compile it because it pulls async functions from the liveprinter-core library, see [build-grammar.mjs](build-grammar.mjs) for details.
+
+### Test
+
+```bash
+npx vitest
 ```
 
 ## Core Functions
