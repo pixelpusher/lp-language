@@ -1,6 +1,6 @@
 # LivePrinter Grammar Transpiler
 
-A JavaScript transpiler that converts LivePrinter's minigrammar syntax into valid JavaScript code. This projet provides a shorthand notation for calling LivePrinter API functions, making 3D printing code more readable and concise.
+A JavaScript transpiler that converts LivePrinter's minigrammar syntax into valid JavaScript code. This project provides a shorthand notation for calling LivePrinter API functions, making 3D printing code more readable and concise.
 
 **Author**: Evan Raskob 2025
 
