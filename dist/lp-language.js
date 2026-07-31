@@ -94,7 +94,7 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				{
 					name: "FunctionStatement$subexpression$1",
 					symbols: ["FunctionName"],
-					postprocess: ([e]) => (e = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
+					postprocess: ([e]) => (e = /^(ext|ext2|mov|mov2|ret|unret|gcodeEvent|gcode|printEvent|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|tempwait|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|resume|printPaths|printPathsThick|prime|bail|mainloop|loop|delay|tur|tur2)$/.test(e) ? "await lp." + e : "lp." + e, e += "(")
 				},
 				{
 					name: "FunctionStatement$ebnf$1$subexpression$1$subexpression$1$ebnf$1",
@@ -953,7 +953,7 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 			Rule: e
 		};
 	});
-})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g, g = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
+})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#\s*(.+)/g, g = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
 function v(t, n) {
 	let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
 	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, ""), t = t.replaceAll(_, "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {

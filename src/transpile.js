@@ -7,7 +7,7 @@ import {default as nearley}  from 'nearley'; // grammar parser
 export const grammarBlockRegex = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g;
 
 // one line grammar with # at start
-export const grammarOneLineRegex = /(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g;
+export const grammarOneLineRegex = /(?:^|\s|;)#\s*(.+)/g;
 
 // lp object call from transpilation
 export const lpRegex = /([\n\s])*lp(\.)/g;

@@ -15,10 +15,10 @@
     }
   },
   "scripts": {
-    "dev": "node build-grammar.mjs || vite",
-    "build": "node build-grammar.mjs || vite build",
-    "preview": "node build-grammar.mjs || vite preview",
-    "test": "node build-grammar.mjs || npx vitest"
+    "dev": "node build-grammar.mjs && vite",
+    "build": "node build-grammar.mjs && vite build",
+    "preview": "node build-grammar.mjs && vite preview",
+    "test": "node build-grammar.mjs && npx vitest"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^29.0.3",
