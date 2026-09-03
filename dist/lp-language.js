@@ -252,40 +252,46 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 				},
 				{
 					name: "MathFuncs",
-					symbols: [
-						"MathFunc",
-						"Space",
-						"MathFuncs"
-					],
-					postprocess: ([e, t, n]) => [e].concat(n).join("")
-				},
-				{
-					name: "MathFuncs",
 					symbols: ["MathFunc"],
 					postprocess: e
 				},
 				{
-					name: "MathFunc$ebnf$1",
-					symbols: ["AnyVar"],
-					postprocess: e
-				},
-				{
-					name: "MathFunc$ebnf$1",
-					symbols: [],
-					postprocess: function(e) {
-						return null;
-					}
-				},
-				{
-					name: "MathFunc",
+					name: "MathFunc$ebnf$1$subexpression$1",
 					symbols: [
-						"MathFunc$ebnf$1",
 						"Space",
 						"MathOps",
 						"Space",
 						"AnyVar"
-					],
-					postprocess: ([e, t, n, r, i]) => (e || "") + n + i
+					]
+				},
+				{
+					name: "MathFunc$ebnf$1",
+					symbols: ["MathFunc$ebnf$1$subexpression$1"]
+				},
+				{
+					name: "MathFunc$ebnf$1$subexpression$2",
+					symbols: [
+						"Space",
+						"MathOps",
+						"Space",
+						"AnyVar"
+					]
+				},
+				{
+					name: "MathFunc$ebnf$1",
+					symbols: ["MathFunc$ebnf$1", "MathFunc$ebnf$1$subexpression$2"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "MathFunc",
+					symbols: ["AnyVar", "MathFunc$ebnf$1"],
+					postprocess: ([e, t]) => {
+						let n = e;
+						for (let [e, r, i, a] of t) n += r + a;
+						return n;
+					}
 				},
 				{
 					name: "ArrayAccess$subexpression$1",
@@ -346,6 +352,15 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 						"ComplexVar",
 						"Space",
 						"ArrayStatement"
+					],
+					postprocess: ([e, t, n]) => e + n
+				},
+				{
+					name: "ComplexVar",
+					symbols: [
+						"ComplexVar",
+						"Space",
+						"TemplateLiteral"
 					],
 					postprocess: ([e, t, n]) => e + n
 				},
@@ -471,6 +486,161 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 						{ literal: "'" }
 					],
 					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "StringLiteral",
+					symbols: ["TemplateLiteral"],
+					postprocess: e
+				},
+				{
+					name: "TemplateLiteral$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "TemplateLiteral$ebnf$1",
+					symbols: ["TemplateLiteral$ebnf$1", "TemplateChunk"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "TemplateLiteral$ebnf$2",
+					symbols: [{ literal: "$" }],
+					postprocess: e
+				},
+				{
+					name: "TemplateLiteral$ebnf$2",
+					symbols: [],
+					postprocess: function(e) {
+						return null;
+					}
+				},
+				{
+					name: "TemplateLiteral",
+					symbols: [
+						{ literal: "`" },
+						"TemplateLiteral$ebnf$1",
+						"TemplateLiteral$ebnf$2",
+						{ literal: "`" }
+					],
+					postprocess: ([e, t, n, r]) => e + t.join("") + (n || "") + r
+				},
+				{
+					name: "TemplateChunk",
+					symbols: [/[^`\\$]/],
+					postprocess: e
+				},
+				{
+					name: "TemplateChunk",
+					symbols: [{ literal: "\\" }, /./],
+					postprocess: ([e, t]) => e + t
+				},
+				{
+					name: "TemplateChunk",
+					symbols: [{ literal: "$" }, /[^{`\\]/],
+					postprocess: ([e, t]) => e + t
+				},
+				{
+					name: "TemplateChunk$string$1",
+					symbols: [{ literal: "$" }, { literal: "{" }],
+					postprocess: function(e) {
+						return e.join("");
+					}
+				},
+				{
+					name: "TemplateChunk$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "TemplateChunk$ebnf$1",
+					symbols: ["TemplateChunk$ebnf$1", "TemplateExpr"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "TemplateChunk",
+					symbols: [
+						"TemplateChunk$string$1",
+						"TemplateChunk$ebnf$1",
+						{ literal: "}" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "TemplateExpr",
+					symbols: ["TemplateLiteral"],
+					postprocess: e
+				},
+				{
+					name: "TemplateExpr$ebnf$1",
+					symbols: []
+				},
+				{
+					name: "TemplateExpr$ebnf$1",
+					symbols: ["TemplateExpr$ebnf$1", /[^"\\]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "TemplateExpr",
+					symbols: [
+						{ literal: "\"" },
+						"TemplateExpr$ebnf$1",
+						{ literal: "\"" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "TemplateExpr$ebnf$2",
+					symbols: []
+				},
+				{
+					name: "TemplateExpr$ebnf$2",
+					symbols: ["TemplateExpr$ebnf$2", /[^'\\]/],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "TemplateExpr",
+					symbols: [
+						{ literal: "'" },
+						"TemplateExpr$ebnf$2",
+						{ literal: "'" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "TemplateExpr$ebnf$3",
+					symbols: []
+				},
+				{
+					name: "TemplateExpr$ebnf$3",
+					symbols: ["TemplateExpr$ebnf$3", "TemplateExpr"],
+					postprocess: function(e) {
+						return e[0].concat([e[1]]);
+					}
+				},
+				{
+					name: "TemplateExpr",
+					symbols: [
+						{ literal: "{" },
+						"TemplateExpr$ebnf$3",
+						{ literal: "}" }
+					],
+					postprocess: ([e, t, n]) => e + t.join("") + n
+				},
+				{
+					name: "TemplateExpr",
+					symbols: [{ literal: "\\" }, /./],
+					postprocess: ([e, t]) => e + t
+				},
+				{
+					name: "TemplateExpr",
+					symbols: [/[^`'"{}\\]/],
+					postprocess: e
 				},
 				{
 					name: "Number",

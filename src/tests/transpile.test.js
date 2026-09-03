@@ -5,6 +5,7 @@
 import { default as grammar } from "../lpgrammar.js";
 import { default as nearley} from 'nearley';
 import { describe, expect, test, vi } from 'vitest'
+import { transpile } from "../transpile.js";
 
 // nearley grammar line parser
 let lineparser;
@@ -133,7 +134,7 @@ describe('Nearley parser', () => {
         
     });
 
-test('Multiple arguments parsing with maths precidence', () => {
+    test('Multiple arguments parsing with maths precidence', () => {
         // NOTE: dangerous with numbers because operators might combine them!
         lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
         const line = 'move 10 -4 2\n';
@@ -159,7 +160,108 @@ test('Multiple arguments parsing with maths precidence', () => {
         expect(transpiled.results.length).toBeGreaterThan(0);
         const out = transpiled.results[0];
         expect(out).toBe('lp.help({me:first[3](yes[3])});');
-        
-    })
+    });
+
+    test('String addition with string literals and variables', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        let line = 'beep "hello " + "world"\n';
+        let transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep("hello "+"world");');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep "hello " + name\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep("hello "+name);');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep name + " world"\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(name+" world");');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep "a" + "b" + "c"\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep("a"+"b"+"c");');
+    });
+
+    test('String addition in named object args', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = 'mov2 x:40 text:"hello " + name\n';
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('await lp.mov2({x:40,text:"hello "+name});');
+    });
+
+    test('JavaScript backtick template literals', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        let line = 'beep `hello world`\n';
+        let transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(`hello world`);');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep `hello ${name}`\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(`hello ${name}`);');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep `value: ${1 + 2}`\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(`value: ${1 + 2}`);');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'mov2 x:40 label:`pos ${lp.x}`\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('await lp.mov2({x:40,label:`pos ${lp.x}`});');
+    });
+
+    test('JavaScript backticks with nested expressions and string addition', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        let line = 'beep `outer: ${`inner ${x}`}`\n';
+        let transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(`outer: ${`inner ${x}`}`);');
+
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        line = 'beep `hello ${name}` + "!"\n';
+        transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('lp.beep(`hello ${name}`+"!");');
+    });
+
+    test('Tagged template literals with backticks', () => {
+        lineparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+        const line = 'mov2 x:40 html:tag`<div>${name}</div>`\n';
+        const transpiled = lineparser.feed(line);
+        expect(transpiled.results.length).toBe(1);
+        expect(transpiled.results[0]).toBe('await lp.mov2({x:40,html:tag`<div>${name}</div>`});');
+    });
+
+    test('transpile function supports string addition and backticks in one-liners and blocks', () => {
+        const inputOneLiner = `
+            # beep "hello " + "world"
+            # beep \`hello \${name}\`
+        `;
+        const resultOneLiner = transpile(inputOneLiner);
+        expect(resultOneLiner).toContain('lp.beep("hello "+"world");');
+        expect(resultOneLiner).toContain('lp.beep(`hello ${name}`);');
+
+        const inputBlock = `
+            ##
+            beep "hello " + "world"
+            beep \`hello \${name}\`
+            ##
+        `;
+        const resultBlock = transpile(inputBlock);
+        expect(resultBlock).toContain('lp.beep("hello "+"world");');
+        expect(resultBlock).toContain('lp.beep(`hello ${name}`);');
+    });
 
 });

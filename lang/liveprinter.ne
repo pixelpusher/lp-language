@@ -58,11 +58,19 @@ ArrayStatement -> "[" Space BasicStatement Space "]" {% ([lparen, sp, statement,
 
 ParenthesisStatement -> "(" Space BasicStatement Space ")" {% ([lparen, sp, statement, sp2, rparen]) => lparen+statement+rparen %}
 
-MathFuncs -> MathFunc Space MathFuncs {% ([arg, ws, args]) => [arg].concat(args).join('') %} 
-    | MathFunc {% id %}
+MathFuncs -> MathFunc {% id %}
 
-# math functions
-MathFunc -> AnyVar:? Space MathOps Space AnyVar {% ([var1,sp1,op,sp2,var2]) => (var1 ? var1 : "")+op+var2 %}
+# math functions and string addition
+MathFunc -> AnyVar (Space MathOps Space AnyVar):+ 
+{% 
+    ([first, rest]) => {
+        let str = first;
+        for (const [s1, op, s2, nextVar] of rest) {
+            str += op + nextVar;
+        }
+        return str;
+    }
+%}
 
 # array access
 
@@ -84,6 +92,7 @@ ComplexVar -> ComplexVar Space "(" Space AnyArgs:? Space ")"
         }
     %}
     | ComplexVar Space ArrayStatement {% ([base, sp, arr]) => base + arr %}
+    | ComplexVar Space TemplateLiteral {% ([base, sp, tpl]) => base + tpl %}
     | ObjectVariable {% id %}
     | PlainVariable {% id %}
 
@@ -114,6 +123,23 @@ MusicNote -> CharOrLetter SharpOrFlat:? Integer {% ([c,sf,oct]) => `"${c + (sf |
 
 StringLiteral -> "\"" [^"]:* "\"" {% ([lq, str, rq]) => lq + str.join('') + rq %}
                | "'" [^']:* "'" {% ([lq, str, rq]) => lq + str.join('') + rq %}
+               | TemplateLiteral {% id %}
+
+TemplateLiteral -> "`" TemplateChunk:* "$":? "`" {% 
+    ([lq, chunks, trailingDollar, rq]) => lq + chunks.join("") + (trailingDollar || "") + rq 
+%}
+
+TemplateChunk -> [^`\\$] {% id %}
+               | "\\" . {% ([bs, c]) => bs + c %}
+               | "$" [^{`\\] {% ([dollar, c]) => dollar + c %}
+               | "${" TemplateExpr:* "}" {% ([open, expr, close]) => open + expr.join("") + close %}
+
+TemplateExpr -> TemplateLiteral {% id %}
+              | "\"" [^"\\]:* "\"" {% ([q, s, q2]) => q + s.join("") + q2 %}
+              | "'" [^'\\]:* "'" {% ([q, s, q2]) => q + s.join("") + q2 %}
+              | "{" TemplateExpr:* "}" {% ([o, e, c]) => o + e.join("") + c %}
+              | "\\" . {% ([bs, c]) => bs + c %}
+              | [^`'"{}\\] {% id %}
 
 Number -> Integer     {% id %}
     | Float         {% id %}

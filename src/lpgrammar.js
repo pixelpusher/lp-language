@@ -56,11 +56,20 @@ var grammar = {
     {"name": "AnyArg", "symbols": ["AnyVar"]},
     {"name": "ArrayStatement", "symbols": [{"literal":"["}, "Space", "BasicStatement", "Space", {"literal":"]"}], "postprocess": ([lparen, sp, statement, sp2, rparen]) => lparen+statement+rparen},
     {"name": "ParenthesisStatement", "symbols": [{"literal":"("}, "Space", "BasicStatement", "Space", {"literal":")"}], "postprocess": ([lparen, sp, statement, sp2, rparen]) => lparen+statement+rparen},
-    {"name": "MathFuncs", "symbols": ["MathFunc", "Space", "MathFuncs"], "postprocess": ([arg, ws, args]) => [arg].concat(args).join('')},
     {"name": "MathFuncs", "symbols": ["MathFunc"], "postprocess": id},
-    {"name": "MathFunc$ebnf$1", "symbols": ["AnyVar"], "postprocess": id},
-    {"name": "MathFunc$ebnf$1", "symbols": [], "postprocess": function(d) {return null;}},
-    {"name": "MathFunc", "symbols": ["MathFunc$ebnf$1", "Space", "MathOps", "Space", "AnyVar"], "postprocess": ([var1,sp1,op,sp2,var2]) => (var1 ? var1 : "")+op+var2},
+    {"name": "MathFunc$ebnf$1$subexpression$1", "symbols": ["Space", "MathOps", "Space", "AnyVar"]},
+    {"name": "MathFunc$ebnf$1", "symbols": ["MathFunc$ebnf$1$subexpression$1"]},
+    {"name": "MathFunc$ebnf$1$subexpression$2", "symbols": ["Space", "MathOps", "Space", "AnyVar"]},
+    {"name": "MathFunc$ebnf$1", "symbols": ["MathFunc$ebnf$1", "MathFunc$ebnf$1$subexpression$2"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "MathFunc", "symbols": ["AnyVar", "MathFunc$ebnf$1"], "postprocess":  
+        ([first, rest]) => {
+            let str = first;
+            for (const [s1, op, s2, nextVar] of rest) {
+                str += op + nextVar;
+            }
+            return str;
+        }
+        },
     {"name": "ArrayAccess$subexpression$1", "symbols": ["ArrayAccess"]},
     {"name": "ArrayAccess$subexpression$1", "symbols": ["ObjectVariable"]},
     {"name": "ArrayAccess$subexpression$1", "symbols": ["PlainVariable"]},
@@ -80,6 +89,7 @@ var grammar = {
         }
             },
     {"name": "ComplexVar", "symbols": ["ComplexVar", "Space", "ArrayStatement"], "postprocess": ([base, sp, arr]) => base + arr},
+    {"name": "ComplexVar", "symbols": ["ComplexVar", "Space", "TemplateLiteral"], "postprocess": ([base, sp, tpl]) => base + tpl},
     {"name": "ComplexVar", "symbols": ["ObjectVariable"], "postprocess": id},
     {"name": "ComplexVar", "symbols": ["PlainVariable"], "postprocess": id},
     {"name": "AnyVar", "symbols": ["MusicNote"]},
@@ -110,6 +120,33 @@ var grammar = {
     {"name": "StringLiteral$ebnf$2", "symbols": []},
     {"name": "StringLiteral$ebnf$2", "symbols": ["StringLiteral$ebnf$2", /[^']/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
     {"name": "StringLiteral", "symbols": [{"literal":"'"}, "StringLiteral$ebnf$2", {"literal":"'"}], "postprocess": ([lq, str, rq]) => lq + str.join('') + rq},
+    {"name": "StringLiteral", "symbols": ["TemplateLiteral"], "postprocess": id},
+    {"name": "TemplateLiteral$ebnf$1", "symbols": []},
+    {"name": "TemplateLiteral$ebnf$1", "symbols": ["TemplateLiteral$ebnf$1", "TemplateChunk"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "TemplateLiteral$ebnf$2", "symbols": [{"literal":"$"}], "postprocess": id},
+    {"name": "TemplateLiteral$ebnf$2", "symbols": [], "postprocess": function(d) {return null;}},
+    {"name": "TemplateLiteral", "symbols": [{"literal":"`"}, "TemplateLiteral$ebnf$1", "TemplateLiteral$ebnf$2", {"literal":"`"}], "postprocess":  
+        ([lq, chunks, trailingDollar, rq]) => lq + chunks.join("") + (trailingDollar || "") + rq 
+        },
+    {"name": "TemplateChunk", "symbols": [/[^`\\$]/], "postprocess": id},
+    {"name": "TemplateChunk", "symbols": [{"literal":"\\"}, /./], "postprocess": ([bs, c]) => bs + c},
+    {"name": "TemplateChunk", "symbols": [{"literal":"$"}, /[^{`\\]/], "postprocess": ([dollar, c]) => dollar + c},
+    {"name": "TemplateChunk$string$1", "symbols": [{"literal":"$"}, {"literal":"{"}], "postprocess": function joiner(d) {return d.join('');}},
+    {"name": "TemplateChunk$ebnf$1", "symbols": []},
+    {"name": "TemplateChunk$ebnf$1", "symbols": ["TemplateChunk$ebnf$1", "TemplateExpr"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "TemplateChunk", "symbols": ["TemplateChunk$string$1", "TemplateChunk$ebnf$1", {"literal":"}"}], "postprocess": ([open, expr, close]) => open + expr.join("") + close},
+    {"name": "TemplateExpr", "symbols": ["TemplateLiteral"], "postprocess": id},
+    {"name": "TemplateExpr$ebnf$1", "symbols": []},
+    {"name": "TemplateExpr$ebnf$1", "symbols": ["TemplateExpr$ebnf$1", /[^"\\]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "TemplateExpr", "symbols": [{"literal":"\""}, "TemplateExpr$ebnf$1", {"literal":"\""}], "postprocess": ([q, s, q2]) => q + s.join("") + q2},
+    {"name": "TemplateExpr$ebnf$2", "symbols": []},
+    {"name": "TemplateExpr$ebnf$2", "symbols": ["TemplateExpr$ebnf$2", /[^'\\]/], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "TemplateExpr", "symbols": [{"literal":"'"}, "TemplateExpr$ebnf$2", {"literal":"'"}], "postprocess": ([q, s, q2]) => q + s.join("") + q2},
+    {"name": "TemplateExpr$ebnf$3", "symbols": []},
+    {"name": "TemplateExpr$ebnf$3", "symbols": ["TemplateExpr$ebnf$3", "TemplateExpr"], "postprocess": function arrpush(d) {return d[0].concat([d[1]]);}},
+    {"name": "TemplateExpr", "symbols": [{"literal":"{"}, "TemplateExpr$ebnf$3", {"literal":"}"}], "postprocess": ([o, e, c]) => o + e.join("") + c},
+    {"name": "TemplateExpr", "symbols": [{"literal":"\\"}, /./], "postprocess": ([bs, c]) => bs + c},
+    {"name": "TemplateExpr", "symbols": [/[^`'"{}\\]/], "postprocess": id},
     {"name": "Number", "symbols": ["Integer"], "postprocess": id},
     {"name": "Number", "symbols": ["Float"], "postprocess": id},
     {"name": "Float$ebnf$1", "symbols": [/[0-9]/]},
