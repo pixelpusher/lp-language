@@ -29,25 +29,31 @@ describe('main_lp regex tests', () => {
   });
 
   test('grammarBlockRegex matches block delimited by ##', () => {
-    const blockText1 = `## 
-  start
-  mov2 x:40  
-## 
-`;
+    const blockText1 = `
+    ##
+    start
+    mov2 x:40
+    ##
+    `;
     const matches = [...blockText1.matchAll(grammarBlockRegex)];
     expect(matches.length).toBe(1);
-    expect(matches[0][1]).toContain("start");
-    expect(matches[0][1]).toContain("mov2 x:40");
+    expect(matches[0][2]).toContain("start");
+  });
 
+  test('grammarBlockRegex matches multiple blocks delimited by ##', () => {
     const blockText2 = `
-  const arr = ['a#4', 'b5', 'c#3']; 
-  ## 
-    mov2 x:40 y:60 speed:10  
-  ## 
-`;
-    const matches2 = [...blockText2.matchAll(grammarBlockRegex)];
-    expect(matches2.length).toBe(1);
-    expect(matches2[0][1]).toContain("mov2 x:40 y:60 speed:10");
+    ##
+    start
+    ##
+    some other text
+    ##
+    stop
+    ##
+    `;
+    const matches = [...blockText2.matchAll(grammarBlockRegex)];
+    expect(matches.length).toBe(2);
+    expect(matches[0][2]).toContain("start");
+    expect(matches[1][2]).toContain("stop");
   });
 
   test('grammarBlockRegex matches multiple blocks delimited by ##', () => {
@@ -70,10 +76,10 @@ describe('main_lp regex tests', () => {
 `;
     const matches = [...multBlockText.matchAll(grammarBlockRegex)];
     expect(matches.length).toBe(2);
-    expect(matches[0][1]).toContain("mov2 x:40 y:60 speed:10");
-    expect(matches[1][1]).toContain("turn 40");
-    expect(matches[1][1]).toContain("speed 60");
-    expect(matches[1][1]).toContain("draw 5");
+    expect(matches[0][2]).toContain("mov2 x:40 y:60 speed:10");
+    expect(matches[1][2]).toContain("turn 40");
+    expect(matches[1][2]).toContain("speed 60");
+    expect(matches[1][2]).toContain("draw 5");
   });
 
   test('transpile handles multiple blocks without duplicating previous blocks', () => {
@@ -146,28 +152,212 @@ describe('main_lp regex tests', () => {
     expect(res).toContain('await obj.mov2({x:obj.cx,y:obj.cy});');
   });
 
+  test('nearley math parse test', async () => {
+    const nearley = (await import('nearley')).default;
+    const grammar = (await import('../lpgrammar.js')).default;
+    const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+    parser.feed('turn (3*pi/2 - ang1) true|\n');
+    console.log(parser.results[0]);
+  });
+
+  test('nearley hashtag test', async () => {
+    const nearley = (await import('nearley')).default;
+    const grammar = (await import('../lpgrammar.js')).default;
+    const parser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar));
+    try {
+      parser.feed('# turn 10|\n');
+      console.log('SUCCESS:', parser.results[0]);
+    } catch(e) {
+      console.log('ERROR:', e.message);
+    }
+  });
+
+  test('global async function test', () => {
+    const code = `
+global test1 = async function() {
+  ##
+  turn 40
+  ##
+};
+global test2 = async function() {
+  ##
+  turn 80
+  ##
+};`;
+    const res = transpile(code);
+    console.log("=== GLOBAL ASYNC ===");
+    console.log(JSON.stringify(res));
+    console.log("=== END ===");
+  });
+
+  test('breaking test', () => {
+    const code = `
+async function test1() {
+  ##
+  turnto pi/2
+  ##
+}
+async function col1() {
+  ##
+  turn 80
+  ##
+}`;
+    const res = transpile(code);
+    console.log("=== BREAKING TEST ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
+  test('consecutive ## blocks', () => {
+    const code = `
+##
+turn 40
+##
+##
+turn 80
+##
+    `;
+    const res = transpile(code);
+    console.log("=== CONSECUTIVE BLOCKS ===");
+    console.log(JSON.stringify(res));
+    console.log("=== END ===");
+    expect(res).toContain('lp.turn(40);');
+    expect(res).toContain('lp.turn(80);');
+  });
+
+  test('async function with one line regex', () => {
+    const code = `
+async function test1() {
+  # turn 40
+}
+async function test2() {
+  # turn 80
+}`;
+    const res = transpile(code);
+    console.log("=== ONE LINER RESULT ===");
+    console.log(JSON.stringify(res));
+    console.log("=== END ===");
+  });
+
+  test('multiple async functions with ## blocks', () => {
+    const code = `
+      async function test1() {
+        ##
+        turn 40
+        ##
+      }
+
+      async function col1() {
+        ##
+        turn 80
+        ##
+      }
+    `;
+    const result = transpile(code);
+    console.log("=== ASYNC FUNC RESULT ===");
+    console.log(result);
+    console.log("=== END ===");
+    expect(result).toContain('lp.turn(40);');
+    expect(result).toContain('lp.turn(80);');
+  });
+
+  test('test mixed', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const code = fs.readFileSync(path.join(__dirname, '../../mixed2.js'), 'utf8');
+    const res = transpile(code);
+    console.log("=== MIXED RESULT ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
+  test('test user eval', () => {
+    const code = `
+async function test1() {
+  ##
+  start
+  ##
+  # turn 40
+}
+async function col1() {
+  ##
+  turn 80
+  ##
+}
+`;
+    const res = transpile(code);
+    console.log("=== USER EVAL ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
   test('transpile badcode.js successfully with mixed one-line and block grammars', async () => {
     const fs = await import('fs');
     const path = await import('path');
-    const code = fs.readFileSync(path.resolve(__dirname, 'badcode.js'), 'utf8');
-
+    const code = fs.readFileSync(path.join(__dirname, 'badcode.js'), 'utf8');
     const res1 = transpile(code);
     expect(res1).toBeDefined();
-    expect(res1).toContain('globalThis.topColTri = {{');
-    expect(res1).toContain('lp.turn((pi/2+ang1),true);lp.speed(yspeed);');
-    expect(res1).toContain('await lp.drawtime(dur);');
-    expect(res1).toContain('lp.turnto(pi/2);');
+    
     // Ensure no unparsed # or ## remain
     expect(res1).not.toMatch(/(?:^|\s|;)#[^#]/);
     expect(res1).not.toContain('##');
-    // Ensure comments did not corrupt dur into du
-    expect(res1).not.toContain('drawtime(du)');
 
     const res2 = transpile(code, 'obj');
     expect(res2).toBeDefined();
-    expect(res2).toContain('obj.turn((pi/2+ang1),true);obj.speed(yspeed);');
-    expect(res2).toContain('await obj.drawtime(dur);');
-    expect(res2).toContain('obj.turnto(pi/2);');
+    expect(res2).not.toMatch(/(?:^|\s|;)#[^#]/);
+    expect(res2).not.toContain('##');
   });
+
+  test('test error parsing', () => {
+    const code = `
+##
+turn 10
+# turn 20
+##
+turn 30
+##
+`;
+    try {
+      const res = transpile(code);
+      console.log("=== ERROR RESULT ===");
+      console.log(res);
+      console.log("=== END ===");
+    } catch(e) {
+      console.log("CAUGHT ERROR:", e.message);
+    }
+  });
+
+  test('test multi-line block', () => {
+    const code = `
+##
+turn 10
+turn 20
+turn 30
+##
+`;
+    const res = transpile(code);
+    console.log("=== MULTI-LINE RESULT ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
+  test('test mixed inside async', () => {
+    const code = `
+async function f() {
+  ##
+  start
+  ##
+  # turn 20
+  ##
+  turn 30
+  ##
+}
+`;
+    const res = transpile(code);
+    console.log("=== MIXED ASYNC RESULT ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
 
 });

@@ -1123,15 +1123,15 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 			Rule: e
 		};
 	});
-})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#(?!#)\s*(.+)/g, g = /\blp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
+})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(^|[^#])##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#(?!#)\s*(.+)/g, g = /\blp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
 function v(t, n) {
 	let r = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm;
-	return t = t.replaceAll(r, "$1"), t = t.replaceAll(_, (e) => (e.startsWith("global") ? "" : e[0]) + "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
-		e.debug("Match: " + n);
-		let i = new p.default.Parser(p.default.Grammar.fromCompiled(f.default)), a = "";
-		return n.split(/[\r\n]/).map((t) => {
-			t = t.replace(r, "$1").replace(/([\r\n]+)/gm, "").trim(), t.length !== 0 && (i.feed(t + "|\n"), e.debug(`block parser state ${i.results[0]}`), e.debug(`BLOCK Line: !!!${t}!!!`));
-		}), a += i.results[0], "\n" + a + "\n";
+	return t = t.replaceAll(r, "$1"), t = t.replaceAll(_, (e) => (e.startsWith("global") ? "" : e[0]) + "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n, i) => {
+		e.debug("Match: " + i);
+		let a = new p.default.Parser(p.default.Grammar.fromCompiled(f.default)), o = "";
+		return i.split(/[\r\n]/).map((t) => {
+			t = t.replace(r, "$1").replace(/([\r\n]+)/gm, "").trim(), t.length !== 0 && (a.feed(t + "|\n"), e.debug(`block parser state ${a.results[0]}`), e.debug(`BLOCK Line: !!!${t}!!!`));
+		}), o += a.results[0], o = o.replaceAll(";", ";\n"), n + "\n" + o + "\n";
 	}), e.info("code AFTER block-grammar processing -------------------------------"), e.info(t), e.info("========================= -------------------------------"), t = t.replaceAll(h, (t, n) => {
 		let i = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
 		e.debug("!!!" + t + "!!!"), e.debug("!!!" + n + "!!!");

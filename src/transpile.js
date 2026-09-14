@@ -4,7 +4,7 @@ import { default as grammar } from "./lpgrammar.js";
 import {default as nearley}  from 'nearley'; // grammar parser
 
 // in code, find blocks inside ## ## and feed to grammar
-export const grammarBlockRegex = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g;
+export const grammarBlockRegex = /(^|[^#])##\s*([\s\S]+?)(?:[\s\n]*)##/g;
 
 // one line grammar with # at start
 export const grammarOneLineRegex = /(?:^|\s|;)#(?!#)\s*(.+)/g;
@@ -46,7 +46,7 @@ export function transpile(code, objName) {
     Logger.debug(code);
     Logger.debug("========================= -------------------------------");
 
-    code = code.replaceAll(grammarBlockRegex, (match, p1) => {
+    code = code.replaceAll(grammarBlockRegex, (match, prefix, p1) => {
         Logger.debug("Match: " + p1);
 
         const blockparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar)); // parser for entire block
@@ -67,8 +67,11 @@ export function transpile(code, objName) {
         }); // end compiling line by line
 
         result += blockparser.results[0];
+        
+        // Add newlines after semicolons to prevent flattening multi-line blocks into a single line
+        result = result.replaceAll(';', ';\n');
 
-        return "\n" + result + "\n"; // need leading return for block
+        return prefix + "\n" + result + "\n"; // need leading return for block
     });
 
     Logger.info("code AFTER block-grammar processing -------------------------------");
