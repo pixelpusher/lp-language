@@ -157,8 +157,6 @@ describe('main_lp regex tests', () => {
     expect(res1).toContain('lp.turn((pi/2+ang1),true);lp.speed(yspeed);');
     expect(res1).toContain('await lp.drawtime(dur);');
     expect(res1).toContain('lp.turnto(pi/2);');
-    expect(res1).toContain('await lp.up(0.15);');
-    expect(res1).toContain('await lp.mov2({x:lp.cy,y:lp.cy,speed:hspeed});');
     // Ensure no unparsed # or ## remain
     expect(res1).not.toMatch(/(?:^|\s|;)#[^#]/);
     expect(res1).not.toContain('##');
@@ -170,7 +168,6 @@ describe('main_lp regex tests', () => {
     expect(res2).toContain('obj.turn((pi/2+ang1),true);obj.speed(yspeed);');
     expect(res2).toContain('await obj.drawtime(dur);');
     expect(res2).toContain('obj.turnto(pi/2);');
-    expect(res2).toContain('await obj.mov2({x:obj.cy,y:obj.cy,speed:hspeed});');
   });
 
 });

@@ -34,7 +34,7 @@ export function transpile(code, objName) {
     // filter out comments
     const commentRegex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm; // https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline/15123777#15123777
 
-    code = code.replace(commentRegex, '$1'); // remove comments while preserving preceding non-colon/non-backslash character
+    code = code.replaceAll(commentRegex, '$1'); // destructively remove comments before parsing while preserving preceding code
 
     // replace global keywords
     code = code.replaceAll(globalRegex, (match) => {
@@ -54,8 +54,8 @@ export function transpile(code, objName) {
         let lines = p1.split(/[\r\n]/);
 
         lines.map((line) => {
-            // get ride of remaining line breaks and leading spaces
-            line = line.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, "");
+            // strip comments, line breaks, and whitespace before Nearley
+            line = line.replace(commentRegex, '$1').replace(/([\r\n]+)/gm, "").trim();
             if (line.length === 0) {
                 return;
             } else {
@@ -88,16 +88,19 @@ export function transpile(code, objName) {
         Logger.debug("!!!"+p1+"!!!");
         grammarFound = true; // found!
         let result = "";
-        let fail = false; // if not successful
+        let badComments = '';
+
+        if ((badComments = p1.match(commentRegex)) !== null) {
+            throw SyntaxError(`Transpiler: uncaught comments in code: //${badComments}`);
+        }
+        // alternatively, strip them...
+        // let line = p1 ? p1.replace(commentRegex, '$1').trim() : "";
+
         let line = p1;
 
-        //Logger.debug("LINE::" + line + "::LINE");
         if (line) {
                 lineparser.feed(line + '\n');
-                //result += "/*ERROR IN PARSE: [" + fail + "] + offending code: [" + line + "]" + "*/\n";
-            
                 result = lineparser.results[0];
-                //Logger.debug(result);
         }
         const prefix = match.startsWith('#') ? '' : (match[0] === ';' ? ';' : '');
         return prefix + '\n' + result;

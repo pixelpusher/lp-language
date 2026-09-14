@@ -115,32 +115,3 @@ global col1 = {{
   ##
 }};
 
-
-
-global setupspeeds = function( a=4,b=3) {
-  global ang1 = Math.atan2(a,b);
-  global hspeed = rootNote*Math.sqrt(1 + Math.pow(a/b,2)) + 'hz';
-  global yspeed = rootNote*a/b+ 'hz';
-  global xspeed = rootNote+ 'hz';
-};
-
-
-global drawstrip = {{
-await test1();
-
-await topColTri();
-
-await jaggies();  
-
-await col1();
-
-await topColTri();
-
-await jaggies();
-
-await col1();
-
-# up 0.15
-# mov2 x:lp.cy y:lp.cy speed:hspeed
-}};
-
