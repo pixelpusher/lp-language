@@ -360,4 +360,59 @@ async function f() {
   });
 
 
+  test('test semicolon', () => {
+    const code = `
+async function col1() {
+  # turn 80
+};
+`;
+    try {
+      console.log(transpile(code));
+    } catch (e) {
+      console.log("ERROR:", e.message);
+    }
+  });
+
+  test('test missing closing ##', () => {
+    const code = `
+global col1 = async () => {
+  ##
+  turn 80
+};
+global col2 = async () => {
+  ##
+  turn 90
+  ##
+};
+`;
+    try {
+      console.log(transpile(code));
+    } catch (e) {
+      console.log("ERROR MESSAGE IS:", e.message);
+    }
+  });
+
+  test('test exact user code', () => {
+    const code = `
+global test1 = async() =>{
+
+  ## 
+  turnto pi/2 
+  ##
+};
+
+
+global col1 = async() =>{
+  ##
+  turn 80
+  ##
+};
+`;
+    try {
+      console.log(transpile(code));
+    } catch(e) {
+      console.log("ERROR MESSAGE IS:", e.message);
+    }
+  });
+
 });

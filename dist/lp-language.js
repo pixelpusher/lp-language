@@ -1129,8 +1129,15 @@ function v(t, n) {
 	return t = t.replaceAll(r, "$1"), t = t.replaceAll(_, (e) => (e.startsWith("global") ? "" : e[0]) + "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n, i) => {
 		e.debug("Match: " + i);
 		let a = new p.default.Parser(p.default.Grammar.fromCompiled(f.default)), o = "";
-		return i.split(/[\r\n]/).map((t) => {
-			t = t.replace(r, "$1").replace(/([\r\n]+)/gm, "").trim(), t.length !== 0 && (a.feed(t + "|\n"), e.debug(`block parser state ${a.results[0]}`), e.debug(`BLOCK Line: !!!${t}!!!`));
+		return i.split(/[\r\n]/).map((t, n) => {
+			if (t = t.replace(r, "$1").replace(/([\r\n]+)/gm, "").trim(), t.length !== 0) {
+				try {
+					a.feed(t + "|\n"), e.debug(`block parser state ${a.results[0]}`);
+				} catch (e) {
+					throw Error(`Syntax error in ## block at line "${t}": ${e.message}`);
+				}
+				e.debug(`BLOCK Line: !!!${t}!!!`);
+			}
 		}), o += a.results[0], o = o.replaceAll(";", ";\n"), n + "\n" + o + "\n";
 	}), e.info("code AFTER block-grammar processing -------------------------------"), e.info(t), e.info("========================= -------------------------------"), t = t.replaceAll(h, (t, n) => {
 		let i = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
@@ -1138,7 +1145,12 @@ function v(t, n) {
 		let a = "", o = "";
 		if ((o = n.match(r)) !== null) throw SyntaxError(`Transpiler: uncaught comments in code: //${o}`);
 		let s = n;
-		return s && (i.feed(s + "\n"), a = i.results[0]), (t.startsWith("#") ? "" : t[0] === ";" ? ";" : "") + "\n" + a;
+		if (s) try {
+			i.feed(s + "\n"), a = i.results[0];
+		} catch (e) {
+			throw Error(`Syntax error in one-liner "#${s}": ${e.message}`);
+		}
+		return (t.startsWith("#") ? "" : t[0] === ";" ? ";" : "") + "\n" + a;
 	}), n && (t = t.replaceAll(g, `${n}$1`)), e.debug("code AFTER one-line-grammar processing -------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t;
 }
 "stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude".split("|");

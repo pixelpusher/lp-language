@@ -53,15 +53,19 @@ export function transpile(code, objName) {
         let result = "";
         let lines = p1.split(/[\r\n]/);
 
-        lines.map((line) => {
+        lines.map((line, index) => {
             // strip comments, line breaks, and whitespace before Nearley
             line = line.replace(commentRegex, '$1').replace(/([\r\n]+)/gm, "").trim();
             if (line.length === 0) {
                 return;
             } else {
-                // errors bubble up to calling function
-                blockparser.feed(line + "|\n"); // EOL terminates command
-                Logger.debug(`block parser state ${blockparser.results[0]}`);
+                try {
+                    // errors bubble up to calling function
+                    blockparser.feed(line + "|\n"); // EOL terminates command
+                    Logger.debug(`block parser state ${blockparser.results[0]}`);
+                } catch (e) {
+                    throw new Error(`Syntax error in ## block at line "${line}": ${e.message}`);
+                }
             }
             Logger.debug(`BLOCK Line: !!!${line}!!!`);
         }); // end compiling line by line
@@ -102,8 +106,12 @@ export function transpile(code, objName) {
         let line = p1;
 
         if (line) {
+            try {
                 lineparser.feed(line + '\n');
                 result = lineparser.results[0];
+            } catch (e) {
+                throw new Error(`Syntax error in one-liner "#${line}": ${e.message}`);
+            }
         }
         const prefix = match.startsWith('#') ? '' : (match[0] === ';' ? ';' : '');
         return prefix + '\n' + result;
