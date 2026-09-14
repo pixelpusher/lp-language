@@ -170,7 +170,7 @@ Matches LivePrinter commands in block format (multi-line):
 Matches single-line LivePrinter commands:
 
 ```regex
-/(?:^|\s+|;)#\s*(.+)(?:[^\n]*)/g
+/(?:^|\s|;)#(?!#)\s*(.+)/g
 ```
 
 **Matches commands like:**
@@ -185,7 +185,7 @@ Matches single-line LivePrinter commands:
 Matches LivePrinter object calls in transpiled code:
 
 ```regex
-/([\n\s])*lp(\.)/g
+/\blp(\.)/g
 ```
 
 #### `globalRegex`

@@ -7,10 +7,10 @@ import {default as nearley}  from 'nearley'; // grammar parser
 export const grammarBlockRegex = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g;
 
 // one line grammar with # at start
-export const grammarOneLineRegex = /(?:^|\s|;)#\s*(.+)/g;
+export const grammarOneLineRegex = /(?:^|\s|;)#(?!#)\s*(.+)/g;
 
 // lp object call from transpilation
-export const lpRegex = /([\n\s])*lp(\.)/g;
+export const lpRegex = /\blp(\.)/g;
 
 export const globalRegex = /(?:^|\s|;)(global)(?:\s+)/g;
 
@@ -25,9 +25,6 @@ export function transpile(code, objName) {
     // Create a Parser object from our grammar.
     // global var grammar created by /static/lib/nearley/lpgrammar.js
     // global var nearley created by /static/lib/nearley/nearley.js
-
-
-
     //
     // try block element grammar replacement FIRST because one-liner matches part
     //
@@ -37,10 +34,13 @@ export function transpile(code, objName) {
     // filter out comments
     const commentRegex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm; // https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline/15123777#15123777
 
-    code = code.replace(commentRegex, ''); // remove comments
+    code = code.replace(commentRegex, '$1'); // remove comments while preserving preceding non-colon/non-backslash character
 
     // replace global keywords
-    code = code.replaceAll(globalRegex, "globalThis.");
+    code = code.replaceAll(globalRegex, (match) => {
+        const prefix = match.startsWith("global") ? "" : match[0];
+        return prefix + "globalThis.";
+    });
 
     Logger.debug("code before pre-processing-------------------------------");
     Logger.debug(code);
@@ -99,12 +99,13 @@ export function transpile(code, objName) {
                 result = lineparser.results[0];
                 //Logger.debug(result);
         }
-        return '\n' + result;
+        const prefix = match.startsWith('#') ? '' : (match[0] === ';' ? ';' : '');
+        return prefix + '\n' + result;
     });
 
     // change lp object name if passed in
     if (objName) {
-        code = code.replace(lpRegex, `$1${objName}$2`);
+        code = code.replaceAll(lpRegex, `${objName}$1`);
     }
 
     Logger.debug("code AFTER one-line-grammar processing -------------------------------");

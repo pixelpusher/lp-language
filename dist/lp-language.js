@@ -1123,9 +1123,9 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 			Rule: e
 		};
 	});
-})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#\s*(.+)/g, g = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
+})), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#(?!#)\s*(.+)/g, g = /\blp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
 function v(t, n) {
-	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, ""), t = t.replaceAll(_, "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
+	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, "$1"), t = t.replaceAll(_, (e) => (e.startsWith("global") ? "" : e[0]) + "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
 		e.debug("Match: " + n);
 		let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default)), i = "";
 		return n.split(/[\r\n]/).map((t) => {
@@ -1135,8 +1135,8 @@ function v(t, n) {
 		let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
 		e.debug("!!!" + t + "!!!"), e.debug("!!!" + n + "!!!");
 		let i = "", a = n;
-		return a && (r.feed(a + "\n"), i = r.results[0]), "\n" + i;
-	}), n && (t = t.replace(g, `$1${n}$2`)), e.debug("code AFTER one-line-grammar processing -------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t;
+		return a && (r.feed(a + "\n"), i = r.results[0]), (t.startsWith("#") ? "" : t[0] === ";" ? ";" : "") + "\n" + i;
+	}), n && (t = t.replaceAll(g, `${n}$1`)), e.debug("code AFTER one-line-grammar processing -------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t;
 }
 "stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude".split("|");
 var y = /^(stop|prime|mov2|ext|gcodeEvent|gcode|errorEvent|retractspeed|sendFirmwareRetractSettings|retract|unretract|start|temp|bed|fan|drawtime|draw|up|drawup|dup|upto|downto|down|drawdown|dd|travel|traveltime|fwretract|polygon|rect|extrudeto|sendExtrusionGCode|sendArcExtrusionGCode|extrude|move|moveto|drawfill|sync|fill|wait|pause|resume|printPaths|printPathsThick|_extrude)[^a-zA-Z0-9\_]/;
