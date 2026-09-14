@@ -34,8 +34,6 @@ export function transpile(code, objName) {
     //code = code.replace(/([\r\n]+)/gm, "|").substring(^\s*(\|), "").replace(grammarFinderRegex, (match, p1) => {
     // TODO: fix multiline (split?)
 
-    const blockparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar)); // parser for entire block
-
     // filter out comments
     const commentRegex = /\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm; // https://stackoverflow.com/questions/5989315/regex-for-match-replacing-javascript-comments-both-multiline-and-inline/15123777#15123777
 
@@ -51,6 +49,7 @@ export function transpile(code, objName) {
     code = code.replaceAll(grammarBlockRegex, (match, p1) => {
         Logger.debug("Match: " + p1);
 
+        const blockparser = new nearley.Parser(nearley.Grammar.fromCompiled(grammar)); // parser for entire block
         let result = "";
         let lines = p1.split(/[\r\n]/);
 

@@ -1125,10 +1125,9 @@ var t = Object.create, n = Object.defineProperty, r = Object.getOwnPropertyDescr
 	});
 })), f = /* @__PURE__ */ l(u(), 1), p = /* @__PURE__ */ l(d(), 1), m = /(?:^|\s+|;)##\s*([\s\S]+?)(?:[\s\n]*)##/g, h = /(?:^|\s|;)#\s*(.+)/g, g = /([\n\s])*lp(\.)/g, _ = /(?:^|\s|;)(global)(?:\s+)/g;
 function v(t, n) {
-	let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default));
 	return t = t.replace(/\/\*[\s\S]*?\*\/|([^\\:]|^)\/\/.*$/gm, ""), t = t.replaceAll(_, "globalThis."), e.debug("code before pre-processing-------------------------------"), e.debug(t), e.debug("========================= -------------------------------"), t = t.replaceAll(m, (t, n) => {
 		e.debug("Match: " + n);
-		let i = "";
+		let r = new p.default.Parser(p.default.Grammar.fromCompiled(f.default)), i = "";
 		return n.split(/[\r\n]/).map((t) => {
 			t = t.replace(/([\r\n]+)/gm, "").replace(/(^\s+)/, ""), t.length !== 0 && (r.feed(t + "|\n"), e.debug(`block parser state ${r.results[0]}`), e.debug(`BLOCK Line: !!!${t}!!!`));
 		}), i += r.results[0], "\n" + i + "\n";

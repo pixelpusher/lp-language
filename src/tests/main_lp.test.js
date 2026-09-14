@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 
-import { grammarOneLineRegex, grammarBlockRegex } from "../transpile.js";
+import { grammarOneLineRegex, grammarBlockRegex, transpile } from "../transpile.js";
 import { describe, test, expect } from 'vitest'
 
 describe('main_lp regex tests', () => {
@@ -48,6 +48,54 @@ describe('main_lp regex tests', () => {
     const matches2 = [...blockText2.matchAll(grammarBlockRegex)];
     expect(matches2.length).toBe(1);
     expect(matches2[0][1]).toContain("mov2 x:40 y:60 speed:10");
+  });
+
+  test('grammarBlockRegex matches multiple blocks delimited by ##', () => {
+    
+  const multBlockText = `
+  const arr = ['a#4', 'b5', 'c#3']; 
+  ## 
+    mov2 x:40 y:60 speed:10  
+  ## 
+
+  // blah
+
+  let i=0;
+
+  ##
+  turn 40
+  speed 60
+  draw 5
+  ##
+`;
+    const matches = [...multBlockText.matchAll(grammarBlockRegex)];
+    expect(matches.length).toBe(2);
+    expect(matches[0][1]).toContain("mov2 x:40 y:60 speed:10");
+    expect(matches[1][1]).toContain("turn 40");
+    expect(matches[1][1]).toContain("speed 60");
+    expect(matches[1][1]).toContain("draw 5");
+  });
+
+  test('transpile handles multiple blocks without duplicating previous blocks', () => {
+    const multBlockText = `
+      const arr = ['a#4', 'b5', 'c#3']; 
+      ## 
+        mov2 x:40 y:60 speed:10  
+      ## 
+
+      let i=0;
+
+      ##
+        turn 40
+        speed 60
+      ##
+    `;
+    const result = transpile(multBlockText);
+    const mov2Matches = (result.match(/lp\.mov2/g) || []).length;
+    expect(mov2Matches).toBe(1);
+    expect(result).toContain('await lp.mov2({x:40,y:60,speed:10});');
+    expect(result).toContain('lp.turn(40);');
+    expect(result).toContain('lp.speed(60);');
   });
 
 });
