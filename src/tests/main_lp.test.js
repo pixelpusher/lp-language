@@ -268,12 +268,23 @@ async function test2() {
   test('test mixed', async () => {
     const fs = await import('fs');
     const path = await import('path');
-    const code = fs.readFileSync(path.join(__dirname, '../../mixed2.js'), 'utf8');
+    const code = fs.readFileSync(path.join(__dirname, '../tests/examples/mixed2.js'), 'utf8');
     const res = transpile(code);
     console.log("=== MIXED RESULT ===");
     console.log(res);
     console.log("=== END ===");
   });
+
+  test('test odd longer code from front end', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const code = fs.readFileSync(path.join(__dirname, '../tests/examples/badcode.js'), 'utf8');
+    const res = transpile(code);
+    console.log("=== BADCODE RESULT ===");
+    console.log(res);
+    console.log("=== END ===");
+  });
+
 
   test('test user eval', () => {
     const code = `
